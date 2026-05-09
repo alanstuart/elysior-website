@@ -316,6 +316,9 @@ function App() {
               <a href="#industrias" onClick={closeNav}>
                 {copy.nav.industries}
               </a>
+              <a href="#proyectos" onClick={closeNav}>
+                {copy.nav.projects}
+              </a>
               <a href="#pagos" onClick={closeNav}>
                 {copy.nav.flexibility}
               </a>
@@ -496,6 +499,51 @@ function App() {
                   {label}
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="proyectos" className="section section--portfolio">
+          <div className="section__inner">
+            <header className="section__head section__head--center">
+              <p className="eyebrow eyebrow--center">{copy.portfolio.eyebrow}</p>
+              <h2 className="section__title">{copy.portfolio.title}</h2>
+              <p className="section__lead section__lead--center">{copy.portfolio.lead}</p>
+            </header>
+            <div className="portfolio-grid">
+              {copy.portfolio.cards.map((c) => (
+                <article
+                  key={c.key}
+                  className="glass portfolio-card lift-hover"
+                >
+                  <div className="portfolio-card__top">
+                    <p className="portfolio-card__category">{c.category}</p>
+                    <span className="portfolio-card__badge">{c.badge}</span>
+                  </div>
+                  <h3 className="portfolio-card__name">{c.name}</h3>
+                  <p className="portfolio-card__desc">{c.description}</p>
+                  <ul className="portfolio-card__tags">
+                    {c.tags.map((tag) => (
+                      <li key={tag}>{tag}</li>
+                    ))}
+                  </ul>
+                  <a
+                    className="btn btn--ghost portfolio-card__link"
+                    href={c.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {copy.portfolio.viewProject}
+                  </a>
+                </article>
+              ))}
+            </div>
+            <div className="portfolio-note glass lift-hover">
+              <h3 className="portfolio-note__title">{copy.portfolio.noteTitle}</h3>
+              <p className="portfolio-note__text">{copy.portfolio.noteBody}</p>
+              <a className="btn btn--primary btn--glow portfolio-note__cta" href="#lead">
+                {copy.portfolio.noteCta}
+              </a>
             </div>
           </div>
         </section>
@@ -852,6 +900,9 @@ function App() {
                 </li>
                 <li>
                   <a href="#industrias">{copy.footer.nav.industrias}</a>
+                </li>
+                <li>
+                  <a href="#proyectos">{copy.footer.nav.proyectos}</a>
                 </li>
                 <li>
                   <a href="#pagos">{copy.footer.nav.pagos}</a>
