@@ -360,7 +360,7 @@ function App() {
               <h1 className="hero__title">
                 {heroWords.map((w, i) => (
                   <span key={`${lang}-${w}-${i}`} className="hero__word" style={{ '--d': i }}>
-                    {w}{' '}
+                    {w}
                   </span>
                 ))}
               </h1>

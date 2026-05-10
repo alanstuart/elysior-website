@@ -811,6 +811,11 @@ main {
 }
 
 .hero__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.38em;
+  row-gap: 0.12em;
   font-size: clamp(32px, 5.4vw, 54px);
   font-weight: 600;
   line-height: 1.05;
