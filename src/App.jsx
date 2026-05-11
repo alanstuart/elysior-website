@@ -6,7 +6,9 @@ import './App.css'
  */
 import { getCopy, LANG_CODES, LANG_STORAGE_KEY } from './elysiorTranslations.js'
 
-const WHATSAPP_URL = 'https://wa.me/50600000000'
+const WHATSAPP_PREFILL = 'Hola, quiero más información sobre sus servicios.'
+const WHATSAPP_URL = `https://wa.me/50660256080?text=${encodeURIComponent(WHATSAPP_PREFILL)}`
+const WHATSAPP_LINK_REL = 'noopener noreferrer'
 const CONTACT_EMAIL = 'hola@elysior.studio'
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqengele'
 
@@ -884,7 +886,12 @@ function App() {
             <a className="footer__email" href={`mailto:${CONTACT_EMAIL}`}>
               {CONTACT_EMAIL}
             </a>
-            <a className="footer__wa btn btn--ghost btn--sm" href={WHATSAPP_URL} target="_blank" rel="noreferrer">
+            <a
+              className="footer__wa btn btn--ghost btn--sm"
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel={WHATSAPP_LINK_REL}
+            >
               {copy.footer.whatsapp}
             </a>
           </div>
@@ -942,7 +949,7 @@ function App() {
         className="fab-wa"
         href={WHATSAPP_URL}
         target="_blank"
-        rel="noreferrer"
+        rel={WHATSAPP_LINK_REL}
         aria-label={copy.fabWa}
       >
         <span className="fab-wa__icon" aria-hidden />
