@@ -11,6 +11,43 @@ const WHATSAPP_URL = `https://wa.me/50660256080?text=${encodeURIComponent(WHATSA
 const WHATSAPP_LINK_REL = 'noopener noreferrer'
 const CONTACT_EMAIL = 'hola@elysior.studio'
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqengele'
+const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61586996964376'
+const INSTAGRAM_URL = 'https://www.instagram.com/elysiorglobal/'
+const EXTERNAL_LINK_REL = 'noopener noreferrer'
+
+function SocialLinks({ className = '' }) {
+  return (
+    <div className={`social-links${className ? ` ${className}` : ''}`}>
+      <a
+        href={FACEBOOK_URL}
+        className="social-links__item"
+        target="_blank"
+        rel={EXTERNAL_LINK_REL}
+      >
+        <svg className="social-links__icon social-links__icon--fb" viewBox="0 0 24 24" aria-hidden>
+          <path
+            fill="currentColor"
+            d="M24 12.073C24 5.446 18.627 0 12 0S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 22.027 24 17.062 24 12.073z"
+          />
+        </svg>
+        <span className="social-links__label">Facebook</span>
+      </a>
+      <a
+        href={INSTAGRAM_URL}
+        className="social-links__item"
+        target="_blank"
+        rel={EXTERNAL_LINK_REL}
+      >
+        <svg className="social-links__icon social-links__icon--ig" viewBox="0 0 24 24" aria-hidden>
+          <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" strokeWidth="1.65" />
+          <circle cx="12" cy="12" r="3.35" fill="none" stroke="currentColor" strokeWidth="1.65" />
+          <circle cx="17.25" cy="6.75" r="1.1" fill="currentColor" stroke="none" />
+        </svg>
+        <span className="social-links__label">Instagram</span>
+      </a>
+    </div>
+  )
+}
 
 const EMPTY_LEAD_FORM = {
   nombre: '',
@@ -617,6 +654,7 @@ function App() {
                     <li key={p}>{p}</li>
                   ))}
                 </ul>
+                <SocialLinks className="social-links--lead" />
               </div>
               <form
                 className="lead-form glass"
@@ -873,15 +911,7 @@ function App() {
             </p>
             <p className="footer__geo-note subtle-en">{copy.footer.geoNote}</p>
             <div className="footer__social">
-              <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-                in
-              </a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
-                ◎
-              </a>
-              <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X">
-                𝕏
-              </a>
+              <SocialLinks />
             </div>
             <a className="footer__email" href={`mailto:${CONTACT_EMAIL}`}>
               {CONTACT_EMAIL}
