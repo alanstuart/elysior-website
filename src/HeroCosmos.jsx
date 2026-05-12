@@ -5,15 +5,15 @@ function clamp(n, lo, hi) {
 }
 
 function particleCount() {
-  if (typeof window === 'undefined') return 72
-  if (window.matchMedia('(max-width: 639px)').matches) return 34
-  if (window.matchMedia('(max-width: 1023px)').matches) return 68
-  return 96
+  if (typeof window === 'undefined') return 48
+  if (window.matchMedia('(max-width: 639px)').matches) return 28
+  if (window.matchMedia('(max-width: 1023px)').matches) return 38
+  return 48
 }
 
 function velocityScale() {
   if (typeof window === 'undefined') return 1
-  if (window.matchMedia('(max-width: 639px)').matches) return 0.5
+  if (window.matchMedia('(max-width: 639px)').matches) return 0.55
   if (window.matchMedia('(max-width: 1023px)').matches) return 0.72
   return 1
 }
@@ -23,14 +23,17 @@ function initParticles(w, h, n) {
   const out = []
   for (let i = 0; i < n; i += 1) {
     const depth = Math.random()
+    const vy = -(0.018 + Math.random() * 0.04) * vs
+    const vx = (Math.random() - 0.5) * 0.035 * vs
     out.push({
       x: Math.random() * w,
       y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.12 * vs,
-      vy: (Math.random() - 0.5) * 0.12 * vs,
-      r: (Math.random() * 1.1 + 0.2) * (0.65 + depth * 0.55),
+      vx,
+      vy,
+      r: (Math.random() * 0.85 + 0.18) * (0.65 + depth * 0.45),
       tw: Math.random() * Math.PI * 2,
-      twSpeed: (0.008 + Math.random() * 0.018) * vs,
+      twSpeed: (0.004 + Math.random() * 0.01) * vs,
+      drift: (Math.random() - 0.5) * 0.006 * vs,
       hue: Math.random(),
       depth,
     })
@@ -38,16 +41,33 @@ function initParticles(w, h, n) {
   return out
 }
 
+function paintParticles(ctx, particles, w, h) {
+  ctx.clearRect(0, 0, w, h)
+  for (let i = 0; i < particles.length; i += 1) {
+    const p = particles[i]
+    const twinkle = 0.35 + Math.sin(p.tw) * 0.28
+    const baseA = twinkle * (0.12 + p.hue * 0.14) * (0.45 + p.depth * 0.45)
+    if (p.hue < 0.34) {
+      ctx.fillStyle = `rgba(230, 218, 190, ${baseA})`
+    } else if (p.hue < 0.67) {
+      ctx.fillStyle = `rgba(170, 186, 230, ${baseA})`
+    } else {
+      ctx.fillStyle = `rgba(198, 184, 232, ${baseA})`
+    }
+    ctx.beginPath()
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+    ctx.fill()
+  }
+}
+
 /**
- * Nebula dust + pointer parallax; disabled when `reducedMotion` is true.
- * @param {{ reducedMotion: boolean, anchorRef: import('react').RefObject<HTMLElement | null> }} props
+ * Soft drifting dust; gentle pointer parallax on canvas wrap.
  */
 export function HeroCosmos({ reducedMotion, anchorRef }) {
   const canvasRef = useRef(null)
   const wrapRef = useRef(null)
 
   useEffect(() => {
-    if (reducedMotion) return undefined
     const canvas = canvasRef.current
     const wrap = wrapRef.current
     const anchor = anchorRef?.current
@@ -64,6 +84,7 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
     let targetTy = 0
     let tx = 0
     let ty = 0
+    let moveTick = 0
 
     const resize = () => {
       const rect = anchor.getBoundingClientRect()
@@ -89,10 +110,10 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
       if (r.width < 1 || r.height < 1) return
       const nx = (e.clientX - r.left) / r.width - 0.5
       const ny = (e.clientY - r.top) / r.height - 0.5
-      targetTx = clamp(nx, -0.5, 0.5) * 18
-      targetTy = clamp(ny, -0.5, 0.5) * 12
-      anchor.style.setProperty('--hero-mx', String(nx * 2))
-      anchor.style.setProperty('--hero-my', String(ny * 2))
+      targetTx = clamp(nx, -0.5, 0.5) * 12
+      targetTy = clamp(ny, -0.5, 0.5) * 9
+      anchor.style.setProperty('--hero-mx', String(nx * 1.4))
+      anchor.style.setProperty('--hero-my', String(ny * 1.4))
     }
 
     const onPointerLeave = () => {
@@ -111,44 +132,50 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
         return
       }
 
-      tx += (targetTx - tx) * 0.065
-      ty += (targetTy - ty) * 0.065
+      tx += (targetTx - tx) * 0.04
+      ty += (targetTy - ty) * 0.04
       wrap.style.transform = `translate3d(${tx}px, ${ty}px, 0)`
 
-      ctx.clearRect(0, 0, w, h)
+      moveTick += 1
       for (let i = 0; i < particles.length; i += 1) {
         const p = particles[i]
-        p.x += p.vx
+        p.x += p.vx + p.drift * Math.sin(moveTick * 0.0012 + i)
         p.y += p.vy
-        if (p.x < -8) p.x = w + 8
-        if (p.x > w + 8) p.x = -8
-        if (p.y < -8) p.y = h + 8
-        if (p.y > h + 8) p.y = -8
-
         p.tw += p.twSpeed
-        const twinkle = 0.32 + Math.sin(p.tw) * 0.38
-        const baseA = twinkle * (0.16 + p.hue * 0.32) * (0.55 + p.depth * 0.55)
-        if (p.hue < 0.34) {
-          ctx.fillStyle = `rgba(243, 230, 204, ${baseA})`
-        } else if (p.hue < 0.67) {
-          ctx.fillStyle = `rgba(186, 200, 255, ${baseA})`
-        } else {
-          ctx.fillStyle = `rgba(210, 190, 252, ${baseA})`
-        }
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fill()
+        if (p.x < -10) p.x = w + 10
+        if (p.x > w + 10) p.x = -10
+        if (p.y < -10) p.y = h + 10
+        if (p.y > h + 10) p.y = -10
       }
 
+      paintParticles(ctx, particles, w, h)
       raf = requestAnimationFrame(tick)
     }
 
-    raf = requestAnimationFrame(tick)
+    const tickReduced = () => {
+      tx += (targetTx - tx) * 0.03
+      ty += (targetTy - ty) * 0.03
+      wrap.style.transform = `translate3d(${tx}px, ${ty}px, 0)`
+      for (let i = 0; i < particles.length; i += 1) {
+        const p = particles[i]
+        p.tw += p.twSpeed * 0.18
+      }
+      paintParticles(ctx, particles, w, h)
+      raf = requestAnimationFrame(tickReduced)
+    }
+
+    if (reducedMotion) {
+      raf = requestAnimationFrame(tickReduced)
+    } else {
+      raf = requestAnimationFrame(tick)
+    }
 
     const onVisibility = () => {
       if (document.visibilityState === 'visible') {
         resize()
-        if (!raf) raf = requestAnimationFrame(tick)
+        if (!raf) {
+          raf = requestAnimationFrame(reducedMotion ? tickReduced : tick)
+        }
       }
     }
     document.addEventListener('visibilitychange', onVisibility)
@@ -166,10 +193,8 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
     }
   }, [reducedMotion, anchorRef])
 
-  if (reducedMotion) return null
-
   return (
-    <div className="hero-cosmos" aria-hidden>
+    <div className={`hero-cosmos${reducedMotion ? ' hero-cosmos--reduced' : ''}`} aria-hidden>
       <div className="hero-cosmos__wrap" ref={wrapRef}>
         <canvas ref={canvasRef} className="hero-cosmos__canvas" />
       </div>

@@ -228,55 +228,6 @@ function buildCopy(lang) {
         pt: 'Sinais de confiança',
         fr: 'Signaux de confiance',
       }),
-      mockupUrl: 'elysior.studio · growth',
-      mockupLabel: L({
-        es: 'Stack unificado',
-        en: 'Unified stack',
-        pt: 'Stack unificado',
-        fr: 'Stack unifié',
-      }),
-      mockupTitle: L({
-        es: 'Web + Ads + IA + Automation',
-        en: 'Web + Ads + AI + Automation',
-        pt: 'Web + Ads + IA + Automation',
-        fr: 'Web + Ads + IA + Automation',
-      }),
-      mockupText: L({
-        es: 'Un mismo relato, un embudo coherente y captación siempre activa — para marcas que buscan confianza y resultados.',
-        en: 'One narrative, one coherent funnel, and always-on capture — for brands that want trust and results.',
-        pt: 'Uma narrativa, um funil coerente e captação sempre ativa — para marcas que buscam confiança e resultados.',
-        fr: 'Une même narration, un tunnel cohérent et une capture toujours active — pour les marques qui veulent confiance et résultats.',
-      }),
-      mockupTags: L({
-        es: ['Web', 'Ads', 'IA', 'Automation'],
-        en: ['Web', 'Ads', 'AI', 'Automation'],
-        pt: ['Web', 'Ads', 'IA', 'Automation'],
-        fr: ['Web', 'Ads', 'IA', 'Automation'],
-      }),
-      mockupStatusChips: L({
-        es: ['Pipeline activo', 'Leads capturados', 'Automatización lista'],
-        en: ['Active pipeline', 'Leads captured', 'Automation ready'],
-        pt: ['Pipeline ativo', 'Leads qualificados', 'Automação pronta'],
-        fr: ['Pipeline actif', 'Leads capturés', 'Automatisation prête'],
-      }),
-      mockupStatusAria: L({
-        es: 'Estado del sistema de crecimiento',
-        en: 'Growth system status',
-        pt: 'Estado do sistema de crescimento',
-        fr: 'État du système de croissance',
-      }),
-      mockupPill: L({
-        es: 'Sistema en vivo',
-        en: 'Live system',
-        pt: 'Sistema ao vivo',
-        fr: 'Système en direct',
-      }),
-      mockupStat: L({
-        es: '+ conversión',
-        en: '+ conversion',
-        pt: '+ conversão',
-        fr: '+ conversion',
-      }),
     },
     problem: {
       eyebrow: L({

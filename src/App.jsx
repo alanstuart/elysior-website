@@ -5,7 +5,7 @@ import './App.css'
  * (same project, imported here per maintainability).
  */
 import { getCopy, LANG_CODES, LANG_STORAGE_KEY } from './elysiorTranslations.js'
-import { HeroCosmos } from './HeroCosmos.jsx'
+import { HeroAtmosphere } from './HeroAtmosphere.jsx'
 
 const WHATSAPP_PREFILL = 'Hola, quiero más información sobre sus servicios.'
 const WHATSAPP_URL = `https://wa.me/50660256080?text=${encodeURIComponent(WHATSAPP_PREFILL)}`
@@ -329,6 +329,27 @@ function App() {
   const t = copy.testimonios.items[carousel]
   const heroWords = copy.hero.titleWords
 
+  useEffect(() => {
+    if (!loaded) return undefined
+    const logCurrentHeroDesign = () => {
+      const hero = heroRef.current
+      if (!hero) return
+      const rectFor = (el) => {
+        if (!el) return null
+        const r = el.getBoundingClientRect()
+        return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height }
+      }
+      const badgeItems = [...hero.querySelectorAll('.hero__badges li')].map((el) => rectFor(el))
+      const orbs = [...hero.querySelectorAll('.hero-ambient-orbs__orb')].map((el) => rectFor(el))
+      // #region agent log
+      fetch('http://127.0.0.1:7594/ingest/29e1ab93-4a68-47e6-9a7c-1bf01deba8a8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'dfe161'},body:JSON.stringify({sessionId:'dfe161',runId:'post-fix',hypothesisId:'C1,C2,C3,C4',location:'src/App.jsx:332',message:'current hero design measurements',data:{viewport:{width:window.innerWidth,height:window.innerHeight,dpr:window.devicePixelRatio},hero:rectFor(hero),copyCol:rectFor(hero.querySelector('.hero__col--copy')),visualCol:rectFor(hero.querySelector('.hero__col--visual')),badges:rectFor(hero.querySelector('.hero__badges')),badgeItems,ambientOrbs:rectFor(hero.querySelector('.hero-ambient-orbs')),orbs,overflow:{documentScrollWidth:document.documentElement.scrollWidth,bodyScrollWidth:document.body.scrollWidth,hasHorizontalOverflow:document.documentElement.scrollWidth>window.innerWidth}},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    }
+    logCurrentHeroDesign()
+    window.addEventListener('resize', logCurrentHeroDesign)
+    return () => window.removeEventListener('resize', logCurrentHeroDesign)
+  }, [loaded])
+
   return (
     <div className={`landing${loaded ? ' landing--loaded' : ''}`}>
       {!loaded ? (
@@ -428,25 +449,7 @@ function App() {
 
       <main id="top">
         <section ref={heroRef} className="hero section hero--cinema hero--lux">
-          <div className="hero__spacebase" aria-hidden />
-          <div className="hero__gradient" aria-hidden />
-          <div className="hero__orb hero__orb--a" aria-hidden />
-          <div className="hero__orb hero__orb--b" aria-hidden />
-          <div className="hero__orb hero__orb--c" aria-hidden />
-          <div className="hero__atmosphere" aria-hidden>
-            <div className="hero__nebula hero__nebula--a" />
-            <div className="hero__nebula hero__nebula--b" />
-            <div className="hero__nebula hero__nebula--c" />
-          </div>
-          <div className="hero__aurora" aria-hidden>
-            <div className="hero__aurora-band hero__aurora-band--1" />
-            <div className="hero__aurora-band hero__aurora-band--2" />
-          </div>
-          <div className="hero__microgrid" aria-hidden />
-          <div className="hero__stars" aria-hidden />
-          <div className="hero__parallaxGlow" aria-hidden />
-          <HeroCosmos reducedMotion={reducedMotion} anchorRef={heroRef} />
-          <div className="hero__vignette" aria-hidden />
+          <HeroAtmosphere anchorRef={heroRef} reducedMotion={reducedMotion} />
 
           <div className="section__inner hero__grid">
             <div className="hero__col hero__col--copy">
@@ -489,57 +492,12 @@ function App() {
               </ul>
             </div>
 
-            <div className="hero__col hero__col--visual">
-              <div className="hero-mockup hero-mockup--command glass lift-hover">
-                <div className="hero-mockup__chrome">
-                  <span className="hero-mockup__dot" />
-                  <span className="hero-mockup__dot" />
-                  <span className="hero-mockup__dot" />
-                  <span className="hero-mockup__url">{copy.hero.mockupUrl}</span>
-                </div>
-                <div className="hero-mockup__body">
-                  <p className="hero-mockup__label">{copy.hero.mockupLabel}</p>
-                  <h3 className="hero-mockup__title">{copy.hero.mockupTitle}</h3>
-                  <p className="hero-mockup__text">{copy.hero.mockupText}</p>
-                  <ul className="hero-mockup__statusRow" aria-label={copy.hero.mockupStatusAria}>
-                    {copy.hero.mockupStatusChips.map((label) => (
-                      <li key={label} className="hero-mockup__status">
-                        <span className="hero-mockup__status-dot" aria-hidden />
-                        <span className="hero-mockup__status-label">{label}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="hero-mockup__rows">
-                    <div className="hero-mockup__row">
-                      <span className="hero-mockup__tag">{copy.hero.mockupTags[0]}</span>
-                      <div className="hero-mockup__track">
-                        <div className="hero-mockup__fill hero-mockup__fill--1" />
-                      </div>
-                    </div>
-                    <div className="hero-mockup__row">
-                      <span className="hero-mockup__tag">{copy.hero.mockupTags[1]}</span>
-                      <div className="hero-mockup__track">
-                        <div className="hero-mockup__fill hero-mockup__fill--2" />
-                      </div>
-                    </div>
-                    <div className="hero-mockup__row">
-                      <span className="hero-mockup__tag">{copy.hero.mockupTags[2]}</span>
-                      <div className="hero-mockup__track">
-                        <div className="hero-mockup__fill hero-mockup__fill--3" />
-                      </div>
-                    </div>
-                    <div className="hero-mockup__row">
-                      <span className="hero-mockup__tag">{copy.hero.mockupTags[3]}</span>
-                      <div className="hero-mockup__track">
-                        <div className="hero-mockup__fill hero-mockup__fill--4 hero-mockup__fill--pulse" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="hero-mockup__footer">
-                    <span className="hero-mockup__pill">{copy.hero.mockupPill}</span>
-                    <span className="hero-mockup__stat">{copy.hero.mockupStat}</span>
-                  </div>
-                </div>
+            <div className="hero__col hero__col--visual" aria-hidden>
+              <div className="hero-ambient-orbs">
+                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--1" />
+                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--2" />
+                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--3" />
+                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--4" />
               </div>
             </div>
           </div>
