@@ -74,6 +74,50 @@ function usePrefersReducedMotion() {
   return reduced
 }
 
+const MAG_MAX_PX = 10
+const MAG_STRENGTH = 0.24
+
+/** Subtle pointer pull on fine pointers only; no-op when `reducedMotion`. */
+function MagneticCta({ reducedMotion, className = '', children }) {
+  const wrapRef = useRef(null)
+
+  useEffect(() => {
+    if (reducedMotion) return undefined
+    const wrap = wrapRef.current
+    if (!wrap) return undefined
+    const inner = wrap.firstElementChild
+    if (!(inner instanceof HTMLElement)) return undefined
+    if (typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches) {
+      return undefined
+    }
+
+    const move = (e) => {
+      const r = wrap.getBoundingClientRect()
+      const cx = r.left + r.width / 2
+      const cy = r.top + r.height / 2
+      const dx = Math.max(-MAG_MAX_PX, Math.min(MAG_MAX_PX, (e.clientX - cx) * MAG_STRENGTH))
+      const dy = Math.max(-MAG_MAX_PX, Math.min(MAG_MAX_PX, (e.clientY - cy) * MAG_STRENGTH))
+      inner.style.transform = `translate3d(${dx}px, ${dy}px, 0)`
+    }
+    const leave = () => {
+      inner.style.transform = ''
+    }
+    wrap.addEventListener('pointermove', move)
+    wrap.addEventListener('pointerleave', leave)
+    return () => {
+      wrap.removeEventListener('pointermove', move)
+      wrap.removeEventListener('pointerleave', leave)
+      inner.style.transform = ''
+    }
+  }, [reducedMotion])
+
+  return (
+    <span ref={wrapRef} className={`magnetic-cta${className ? ` ${className}` : ''}`}>
+      {children}
+    </span>
+  )
+}
+
 function LanguageSwitcher({ lang, setLang, copy, className = '', onPick }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
@@ -383,7 +427,8 @@ function App() {
       <div className="nav-spacer" aria-hidden />
 
       <main id="top">
-        <section ref={heroRef} className="hero section hero--cinema">
+        <section ref={heroRef} className="hero section hero--cinema hero--lux">
+          <div className="hero__spacebase" aria-hidden />
           <div className="hero__gradient" aria-hidden />
           <div className="hero__orb hero__orb--a" aria-hidden />
           <div className="hero__orb hero__orb--b" aria-hidden />
@@ -391,12 +436,20 @@ function App() {
           <div className="hero__atmosphere" aria-hidden>
             <div className="hero__nebula hero__nebula--a" />
             <div className="hero__nebula hero__nebula--b" />
-            <div className="hero__stars" />
+            <div className="hero__nebula hero__nebula--c" />
           </div>
+          <div className="hero__aurora" aria-hidden>
+            <div className="hero__aurora-band hero__aurora-band--1" />
+            <div className="hero__aurora-band hero__aurora-band--2" />
+          </div>
+          <div className="hero__microgrid" aria-hidden />
+          <div className="hero__stars" aria-hidden />
+          <div className="hero__parallaxGlow" aria-hidden />
           <HeroCosmos reducedMotion={reducedMotion} anchorRef={heroRef} />
+          <div className="hero__vignette" aria-hidden />
 
           <div className="section__inner hero__grid">
-            <div className="hero__col">
+            <div className="hero__col hero__col--copy">
               <p className="hero__brand text-reveal">
                 <span className="text-reveal__inner">ELYSIOR</span>
               </p>
@@ -404,21 +457,30 @@ function App() {
                 {copy.hero.eyebrow}{' '}
                 <span className="eyebrow__en">{copy.hero.eyebrowAccent}</span>
               </p>
-              <h1 className="hero__title">
-                {heroWords.map((w, i) => (
-                  <span key={`${lang}-${w}-${i}`} className="hero__word" style={{ '--d': i }}>
-                    {w}
-                  </span>
-                ))}
-              </h1>
-              <p className="hero__sub">{copy.hero.sub}</p>
+              <div className="hero__headlineWrap">
+                <div className="hero__headlineBeams" aria-hidden />
+                <h1 className="hero__title">
+                  {heroWords.map((w, i) => (
+                    <span key={`${lang}-${w}-${i}`} className="hero__word" style={{ '--d': i }}>
+                      {w}
+                    </span>
+                  ))}
+                </h1>
+              </div>
+              <div className="hero__subBlock">
+                <p className="hero__sub">{copy.hero.sub}</p>
+              </div>
               <div className="hero__cta">
-                <a className="btn btn--primary btn--glow" href="#lead">
-                  {copy.hero.ctaPrimary}
-                </a>
-                <a className="btn btn--ghost" href="#lead">
-                  {copy.hero.ctaSecondary}
-                </a>
+                <MagneticCta reducedMotion={reducedMotion}>
+                  <a className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target" href="#lead">
+                    <span className="btn__shine">{copy.hero.ctaPrimary}</span>
+                  </a>
+                </MagneticCta>
+                <MagneticCta reducedMotion={reducedMotion}>
+                  <a className="btn btn--ghost btn--heroGhost magnetic-cta__target" href="#lead">
+                    {copy.hero.ctaSecondary}
+                  </a>
+                </MagneticCta>
               </div>
               <ul className="hero__badges" aria-label={copy.hero.badgesAria}>
                 {copy.hero.badges.map((b) => (
@@ -428,7 +490,7 @@ function App() {
             </div>
 
             <div className="hero__col hero__col--visual">
-              <div className="hero-mockup glass lift-hover">
+              <div className="hero-mockup hero-mockup--command glass lift-hover">
                 <div className="hero-mockup__chrome">
                   <span className="hero-mockup__dot" />
                   <span className="hero-mockup__dot" />
@@ -439,18 +501,38 @@ function App() {
                   <p className="hero-mockup__label">{copy.hero.mockupLabel}</p>
                   <h3 className="hero-mockup__title">{copy.hero.mockupTitle}</h3>
                   <p className="hero-mockup__text">{copy.hero.mockupText}</p>
+                  <ul className="hero-mockup__statusRow" aria-label={copy.hero.mockupStatusAria}>
+                    {copy.hero.mockupStatusChips.map((label) => (
+                      <li key={label} className="hero-mockup__status">
+                        <span className="hero-mockup__status-dot" aria-hidden />
+                        <span className="hero-mockup__status-label">{label}</span>
+                      </li>
+                    ))}
+                  </ul>
                   <div className="hero-mockup__rows">
                     <div className="hero-mockup__row">
                       <span className="hero-mockup__tag">{copy.hero.mockupTags[0]}</span>
-                      <span className="hero-mockup__bar hero-mockup__bar--wide" />
+                      <div className="hero-mockup__track">
+                        <div className="hero-mockup__fill hero-mockup__fill--1" />
+                      </div>
                     </div>
                     <div className="hero-mockup__row">
                       <span className="hero-mockup__tag">{copy.hero.mockupTags[1]}</span>
-                      <span className="hero-mockup__bar hero-mockup__bar--mid" />
+                      <div className="hero-mockup__track">
+                        <div className="hero-mockup__fill hero-mockup__fill--2" />
+                      </div>
                     </div>
                     <div className="hero-mockup__row">
                       <span className="hero-mockup__tag">{copy.hero.mockupTags[2]}</span>
-                      <span className="hero-mockup__bar hero-mockup__bar--anim" />
+                      <div className="hero-mockup__track">
+                        <div className="hero-mockup__fill hero-mockup__fill--3" />
+                      </div>
+                    </div>
+                    <div className="hero-mockup__row">
+                      <span className="hero-mockup__tag">{copy.hero.mockupTags[3]}</span>
+                      <div className="hero-mockup__track">
+                        <div className="hero-mockup__fill hero-mockup__fill--4 hero-mockup__fill--pulse" />
+                      </div>
                     </div>
                   </div>
                   <div className="hero-mockup__footer">

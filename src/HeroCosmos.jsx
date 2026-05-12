@@ -5,21 +5,34 @@ function clamp(n, lo, hi) {
 }
 
 function particleCount() {
-  return window.matchMedia('(max-width: 767px)').matches ? 52 : 108
+  if (typeof window === 'undefined') return 72
+  if (window.matchMedia('(max-width: 639px)').matches) return 34
+  if (window.matchMedia('(max-width: 1023px)').matches) return 68
+  return 96
+}
+
+function velocityScale() {
+  if (typeof window === 'undefined') return 1
+  if (window.matchMedia('(max-width: 639px)').matches) return 0.5
+  if (window.matchMedia('(max-width: 1023px)').matches) return 0.72
+  return 1
 }
 
 function initParticles(w, h, n) {
+  const vs = velocityScale()
   const out = []
   for (let i = 0; i < n; i += 1) {
+    const depth = Math.random()
     out.push({
       x: Math.random() * w,
       y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.14,
-      vy: (Math.random() - 0.5) * 0.14,
-      r: Math.random() * 1.15 + 0.25,
+      vx: (Math.random() - 0.5) * 0.12 * vs,
+      vy: (Math.random() - 0.5) * 0.12 * vs,
+      r: (Math.random() * 1.1 + 0.2) * (0.65 + depth * 0.55),
       tw: Math.random() * Math.PI * 2,
-      twSpeed: 0.012 + Math.random() * 0.022,
+      twSpeed: (0.008 + Math.random() * 0.018) * vs,
       hue: Math.random(),
+      depth,
     })
   }
   return out
@@ -78,11 +91,15 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
       const ny = (e.clientY - r.top) / r.height - 0.5
       targetTx = clamp(nx, -0.5, 0.5) * 18
       targetTy = clamp(ny, -0.5, 0.5) * 12
+      anchor.style.setProperty('--hero-mx', String(nx * 2))
+      anchor.style.setProperty('--hero-my', String(ny * 2))
     }
 
     const onPointerLeave = () => {
       targetTx = 0
       targetTy = 0
+      anchor.style.setProperty('--hero-mx', '0')
+      anchor.style.setProperty('--hero-my', '0')
     }
 
     anchor.addEventListener('pointermove', onPointerMove)
@@ -110,7 +127,7 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
 
         p.tw += p.twSpeed
         const twinkle = 0.32 + Math.sin(p.tw) * 0.38
-        const baseA = twinkle * (0.22 + p.hue * 0.38)
+        const baseA = twinkle * (0.16 + p.hue * 0.32) * (0.55 + p.depth * 0.55)
         if (p.hue < 0.34) {
           ctx.fillStyle = `rgba(243, 230, 204, ${baseA})`
         } else if (p.hue < 0.67) {
@@ -144,6 +161,8 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
       anchor.removeEventListener('pointerleave', onPointerLeave)
       document.removeEventListener('visibilitychange', onVisibility)
       wrap.style.transform = ''
+      anchor.style.removeProperty('--hero-mx')
+      anchor.style.removeProperty('--hero-my')
     }
   }, [reducedMotion, anchorRef])
 
