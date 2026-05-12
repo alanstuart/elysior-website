@@ -5,6 +5,7 @@ import './App.css'
  * (same project, imported here per maintainability).
  */
 import { getCopy, LANG_CODES, LANG_STORAGE_KEY } from './elysiorTranslations.js'
+import { HeroCosmos } from './HeroCosmos.jsx'
 
 const WHATSAPP_PREFILL = 'Hola, quiero más información sobre sus servicios.'
 const WHATSAPP_URL = `https://wa.me/50660256080?text=${encodeURIComponent(WHATSAPP_PREFILL)}`
@@ -160,6 +161,7 @@ function App() {
   const [formStatus, setFormStatus] = useState(null)
   const formGotchaRef = useRef(null)
   const successCloseRef = useRef(null)
+  const heroRef = useRef(null)
 
   const langRef = useRef(lang)
   useEffect(() => {
@@ -381,11 +383,17 @@ function App() {
       <div className="nav-spacer" aria-hidden />
 
       <main id="top">
-        <section className="hero section hero--cinema">
+        <section ref={heroRef} className="hero section hero--cinema">
           <div className="hero__gradient" aria-hidden />
           <div className="hero__orb hero__orb--a" aria-hidden />
           <div className="hero__orb hero__orb--b" aria-hidden />
           <div className="hero__orb hero__orb--c" aria-hidden />
+          <div className="hero__atmosphere" aria-hidden>
+            <div className="hero__nebula hero__nebula--a" />
+            <div className="hero__nebula hero__nebula--b" />
+            <div className="hero__stars" />
+          </div>
+          <HeroCosmos reducedMotion={reducedMotion} anchorRef={heroRef} />
 
           <div className="section__inner hero__grid">
             <div className="hero__col">
