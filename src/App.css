@@ -1,22 +1,22 @@
 /* ELYSIOR — luxury client acquisition platform */
 
 .landing {
-  --bg: #03050c;
-  --bg-mid: #0a1020;
-  --text: rgba(248, 250, 255, 0.66);
+  --bg: #010208;
+  --bg-mid: #050814;
+  --text: rgba(248, 250, 255, 0.7);
   --text-strong: #f8fafc;
   --white: #ffffff;
   --gold: #d4b878;
   --gold-bright: #f3e6cc;
-  --gold-dim: rgba(212, 184, 120, 0.11);
-  --blue-deep: #152a52;
-  --blue-glow: #4d7cef;
-  --blue-dim: rgba(77, 124, 239, 0.12);
-  --violet: #a78bfa;
-  --violet-dim: rgba(167, 139, 250, 0.1);
-  --border: rgba(255, 255, 255, 0.065);
-  --glass: rgba(6, 10, 22, 0.5);
-  --glass-border: rgba(255, 255, 255, 0.085);
+  --gold-dim: rgba(212, 184, 120, 0.12);
+  --blue-deep: #0f1a3a;
+  --blue-glow: #5b86ff;
+  --blue-dim: rgba(91, 134, 255, 0.14);
+  --violet: #b49cff;
+  --violet-dim: rgba(180, 156, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.055);
+  --glass: rgba(4, 8, 20, 0.58);
+  --glass-border: rgba(255, 255, 255, 0.09);
   --radius: 24px;
   --radius-sm: 14px;
   --font: 'SF Pro Display', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -32,9 +32,10 @@
   min-height: 100svh;
   background: var(--bg);
   background-image:
-    radial-gradient(ellipse 130% 90% at 50% -35%, rgba(21, 42, 82, 0.55) 0%, transparent 58%),
-    radial-gradient(ellipse 70% 45% at 110% 20%, rgba(77, 124, 239, 0.09) 0%, transparent 50%),
-    linear-gradient(180deg, var(--bg) 0%, #020308 100%);
+    radial-gradient(ellipse 120% 85% at 50% -30%, rgba(15, 26, 58, 0.75) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 100% 15%, rgba(91, 134, 255, 0.11) 0%, transparent 52%),
+    radial-gradient(ellipse 50% 45% at 0% 70%, rgba(180, 156, 255, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg) 0%, #000105 100%);
   color: var(--text);
   font-family: var(--font);
   font-size: 17px;
@@ -1214,11 +1215,11 @@ main {
 
 .lift-hover:hover {
   transform: translateY(-6px);
-  border-color: rgba(212, 184, 120, 0.22);
+  border-color: rgba(212, 184, 120, 0.28);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.08) inset,
-    0 40px 100px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(77, 124, 239, 0.08);
+    0 1px 0 rgba(255, 255, 255, 0.09) inset,
+    0 44px 110px rgba(0, 0, 0, 0.52),
+    0 0 0 1px rgba(91, 134, 255, 0.12);
 }
 
 /* Buttons */
@@ -1260,7 +1261,7 @@ main {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.22) inset,
     0 16px 44px rgba(212, 184, 120, 0.2),
-    0 8px 28px rgba(77, 124, 239, 0.12);
+    0 8px 28px rgba(91, 134, 255, 0.16);
 }
 
 .btn--primary:hover {
@@ -1323,14 +1324,19 @@ main {
 /* Glass */
 
 .glass {
-  background: var(--glass);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.06) 0%, var(--glass) 42%, rgba(2, 4, 12, 0.72) 100%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  backdrop-filter: blur(24px) saturate(1.15);
-  -webkit-backdrop-filter: blur(24px) saturate(1.15);
+  backdrop-filter: blur(28px) saturate(1.35);
+  -webkit-backdrop-filter: blur(28px) saturate(1.35);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.05) inset,
-    0 32px 80px rgba(0, 0, 0, 0.42);
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 36px 100px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(91, 134, 255, 0.04);
+  transition:
+    border-color 0.35s var(--ease-out),
+    box-shadow 0.35s var(--ease-out),
+    transform 0.35s var(--ease-out);
 }
 
 .cards {
@@ -2730,11 +2736,21 @@ main {
 }
 
 .footer__tagline {
+  margin: 0 0 14px;
+  font-size: 14px;
+  max-width: 420px;
+  line-height: 1.55;
+  color: rgba(248, 250, 255, 0.78);
+  letter-spacing: 0.02em;
+}
+
+.footer__geo-line {
   margin: 0 0 22px;
-  font-size: 15px;
-  max-width: 320px;
-  line-height: 1.58;
-  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 255, 0.45);
 }
 
 .footer__social {
@@ -3042,25 +3058,6 @@ main {
   color: rgba(167, 139, 250, 0.65);
 }
 
-.footer__geo {
-  margin: 0 0 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(248, 250, 255, 0.78);
-  letter-spacing: 0.02em;
-}
-
-.footer__geo-sep {
-  margin: 0 8px;
-  color: rgba(248, 250, 255, 0.25);
-}
-
-.footer__geo-note {
-  margin: 0 0 20px;
-  font-size: 12px;
-  color: rgba(248, 250, 255, 0.42);
-}
-
 .footer__bar-en {
   text-transform: none;
   letter-spacing: 0.06em;
@@ -3088,6 +3085,345 @@ main {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Trust bar */
+
+.section--trust {
+  padding-top: 0;
+  padding-bottom: 28px;
+}
+
+.trust-bar__inner {
+  position: relative;
+  padding-top: 8px;
+}
+
+.trust-bar__inner::before {
+  content: '';
+  display: block;
+  height: 1px;
+  margin: 0 auto 28px;
+  max-width: min(720px, 100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 184, 120, 0.35),
+    rgba(91, 134, 255, 0.25),
+    rgba(180, 156, 255, 0.2),
+    transparent
+  );
+}
+
+.trust-bar__track {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 12px;
+}
+
+.trust-bar__item {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 255, 0.72);
+}
+
+@media (min-width: 900px) {
+  .trust-bar__track {
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 14px;
+  }
+
+  .trust-bar__item {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+  }
+}
+
+/* Booking — premium dual cards (no iframe) */
+
+.section--booking {
+  position: relative;
+  padding-top: 80px;
+  padding-bottom: 88px;
+  overflow: hidden;
+}
+
+.section--booking::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 85% 55% at 50% -5%, rgba(91, 134, 255, 0.1) 0%, transparent 58%),
+    radial-gradient(ellipse 70% 45% at 100% 40%, rgba(180, 156, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 65% 50% at 0% 75%, rgba(212, 184, 120, 0.05) 0%, transparent 52%);
+  pointer-events: none;
+}
+
+.section--booking::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 45%;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.35) 100%);
+  pointer-events: none;
+}
+
+.booking-section {
+  position: relative;
+  z-index: 1;
+}
+
+.booking-section__head .section__title {
+  max-width: 24rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.booking-section__subtitle {
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.booking-options {
+  display: grid;
+  gap: 22px;
+  margin-top: 44px;
+  max-width: 1040px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 880px) {
+  .booking-options {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: stretch;
+  }
+}
+
+.booking-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: clamp(24px, 4vw, 34px) clamp(22px, 3.5vw, 30px);
+  border-radius: var(--radius);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.booking-card.glass {
+  background: linear-gradient(
+    168deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(6, 10, 22, 0.72) 35%,
+    rgba(2, 4, 10, 0.94) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 0 0 1px rgba(91, 134, 255, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.07) inset,
+    0 36px 90px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(28px) saturate(1.35);
+  -webkit-backdrop-filter: blur(28px) saturate(1.35);
+}
+
+.booking-card--violet.glass {
+  box-shadow:
+    0 0 0 1px rgba(180, 156, 255, 0.14),
+    0 1px 0 rgba(255, 255, 255, 0.07) inset,
+    0 36px 90px rgba(0, 0, 0, 0.5);
+}
+
+.booking-card__sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(212, 184, 120, 0.12) 0%,
+    transparent 42%,
+    rgba(91, 134, 255, 0.08) 100%
+  );
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.45s var(--ease-out);
+}
+
+.booking-card__sheen--violet {
+  background: linear-gradient(
+    135deg,
+    rgba(180, 156, 255, 0.14) 0%,
+    transparent 45%,
+    rgba(91, 134, 255, 0.1) 100%
+  );
+}
+
+.booking-card:hover .booking-card__sheen {
+  opacity: 1;
+}
+
+.booking-card.lift-hover:hover {
+  border-color: rgba(212, 184, 120, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(212, 184, 120, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 44px 110px rgba(0, 0, 0, 0.55),
+    0 0 60px rgba(91, 134, 255, 0.12);
+}
+
+.booking-card--violet.lift-hover:hover {
+  border-color: rgba(180, 156, 255, 0.32);
+  box-shadow:
+    0 0 0 1px rgba(180, 156, 255, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 44px 110px rgba(0, 0, 0, 0.55),
+    0 0 64px rgba(180, 156, 255, 0.14);
+}
+
+.booking-card__duration {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 14px;
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.booking-card__title {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 14px;
+  font-size: clamp(1.25rem, 2.6vw, 1.45rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+  line-height: 1.25;
+}
+
+.booking-card__desc {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 26px;
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.62;
+  color: rgba(248, 250, 255, 0.68);
+}
+
+.booking-card__cta {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.booking-trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 12px;
+  margin-top: 40px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.booking-trust__pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    border-color 0.3s var(--ease-out),
+    color 0.3s,
+    box-shadow 0.3s;
+}
+
+.booking-trust__pill:hover {
+  color: rgba(248, 250, 255, 0.88);
+  border-color: rgba(212, 184, 120, 0.25);
+  box-shadow: 0 0 24px rgba(91, 134, 255, 0.08);
+}
+
+@media (max-width: 599px) {
+  .section--booking {
+    padding-top: 56px;
+    padding-bottom: 64px;
+  }
+
+  .booking-options {
+    margin-top: 32px;
+  }
+
+  .booking-trust {
+    margin-top: 32px;
+  }
+}
+
+/* Lead contact card */
+
+.lead-contact-card {
+  margin-top: 28px;
+  padding: 22px 24px;
+  border-radius: var(--radius-sm);
+}
+
+.lead-contact-card__email {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gold-bright);
+  border-bottom: 1px solid rgba(212, 184, 120, 0.35);
+  padding-bottom: 2px;
+  margin-bottom: 12px;
+  transition: color 0.25s;
+}
+
+.lead-contact-card__email:hover {
+  color: #fff;
+}
+
+.lead-contact-card__hint {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(248, 250, 255, 0.62);
+}
+
+.lead-contact-card__wa {
+  width: fit-content;
 }
 
 /* Reduced motion */
