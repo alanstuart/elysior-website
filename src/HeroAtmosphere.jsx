@@ -1,7 +1,7 @@
 import { HeroCosmos } from './HeroCosmos.jsx'
 
 /**
- * Calm luxury hero backdrop: deep midnight, soft gas blobs, faint aurora, stars, light dust.
+ * Futuristic space hero backdrop: gas nebula, dual aurora, horizon grid, haze, stars, canvas dust.
  * Pointer parallax: `--hero-mx` / `--hero-my` on the anchor (see HeroCosmos).
  */
 export function HeroAtmosphere({ anchorRef, reducedMotion }) {
@@ -19,10 +19,14 @@ export function HeroAtmosphere({ anchorRef, reducedMotion }) {
       </div>
       <div className="hero__aurora" aria-hidden>
         <div className="hero__aurora-band hero__aurora-band--1" />
+        <div className="hero__aurora-band hero__aurora-band--2" />
       </div>
+      <div className="hero__horizon" aria-hidden />
+      <div className="hero__haze" aria-hidden />
       <div className="hero__starfield" aria-hidden>
         <div className="hero__stars hero__stars--deep" />
         <div className="hero__stars hero__stars--mid" />
+        <div className="hero__stars hero__stars--near" />
       </div>
       <div className="hero__parallaxGlow" aria-hidden />
       <HeroCosmos reducedMotion={reducedMotion} anchorRef={anchorRef} />
