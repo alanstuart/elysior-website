@@ -736,14 +736,20 @@ main {
 }
 
 .hero-atmosphere--reduced .hero__beams,
-.hero-atmosphere--reduced .hero__glassField,
-.hero-atmosphere--reduced .hero__headlineBeams {
+.hero-atmosphere--reduced .hero__glassField {
   transform: none !important;
   transition: none !important;
 }
 
-.hero-atmosphere--reduced + .section__inner.hero__grid .hero__word,
-.hero-atmosphere--reduced + .section__inner.hero__grid .text-reveal__inner {
+/* Headline beams live in the grid sibling, not inside .hero-atmosphere */
+.hero-atmosphere--reduced ~ .section__inner.hero__grid .hero__headlineBeams {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.hero-atmosphere--reduced ~ .section__inner.hero__grid .hero__word,
+.hero-atmosphere--reduced ~ .section__inner.hero__grid .text-reveal__inner {
   opacity: 1 !important;
   transform: none !important;
   animation: none !important;
@@ -1350,7 +1356,7 @@ main {
 
 .hero__col--copy {
   position: relative;
-  z-index: 2;
+  z-index: 4;
   width: 100%;
   min-width: 0;
   max-width: 620px;
@@ -1475,7 +1481,6 @@ main {
   opacity: 0;
   transform: translateY(22px);
   animation: wordIn 0.85s var(--ease-out) forwards;
-  animation-delay: calc(0.08s + (var(--d) * 0.06s));
 }
 
 @keyframes wordIn {
@@ -1518,7 +1523,7 @@ main {
 
 .hero__cta {
   position: relative;
-  z-index: 2;
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   gap: clamp(12px, 2vw, 16px);
