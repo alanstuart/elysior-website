@@ -5,6 +5,7 @@ import './App.css'
  * (same project, imported here per maintainability).
  */
 import { getCopy, LANG_CODES, LANG_STORAGE_KEY } from './elysiorTranslations.js'
+import { HeroCosmos } from './HeroCosmos.jsx'
 
 const WHATSAPP_PREFILL = 'Hola, quiero más información sobre sus servicios.'
 const WHATSAPP_URL = `https://wa.me/50660256080?text=${encodeURIComponent(WHATSAPP_PREFILL)}`
@@ -18,6 +19,43 @@ function calHref(kind) {
   return kind === 'project' ? CAL_PROJECT : CAL_STRATEGY
 }
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqengele'
+const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61586996964376'
+const INSTAGRAM_URL = 'https://www.instagram.com/elysiorglobal/'
+const EXTERNAL_LINK_REL = 'noopener noreferrer'
+
+function SocialLinks({ className = '' }) {
+  return (
+    <div className={`social-links${className ? ` ${className}` : ''}`}>
+      <a
+        href={FACEBOOK_URL}
+        className="social-links__item"
+        target="_blank"
+        rel={EXTERNAL_LINK_REL}
+      >
+        <svg className="social-links__icon social-links__icon--fb" viewBox="0 0 24 24" aria-hidden>
+          <path
+            fill="currentColor"
+            d="M24 12.073C24 5.446 18.627 0 12 0S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 22.027 24 17.062 24 12.073z"
+          />
+        </svg>
+        <span className="social-links__label">Facebook</span>
+      </a>
+      <a
+        href={INSTAGRAM_URL}
+        className="social-links__item"
+        target="_blank"
+        rel={EXTERNAL_LINK_REL}
+      >
+        <svg className="social-links__icon social-links__icon--ig" viewBox="0 0 24 24" aria-hidden>
+          <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" strokeWidth="1.65" />
+          <circle cx="12" cy="12" r="3.35" fill="none" stroke="currentColor" strokeWidth="1.65" />
+          <circle cx="17.25" cy="6.75" r="1.1" fill="currentColor" stroke="none" />
+        </svg>
+        <span className="social-links__label">Instagram</span>
+      </a>
+    </div>
+  )
+}
 
 const EMPTY_LEAD_FORM = {
   nombre: '',
@@ -41,6 +79,50 @@ function usePrefersReducedMotion() {
     return () => mq.removeEventListener('change', fn)
   }, [])
   return reduced
+}
+
+const MAG_MAX_PX = 10
+const MAG_STRENGTH = 0.24
+
+/** Subtle pointer pull on fine pointers only; no-op when `reducedMotion`. */
+function MagneticCta({ reducedMotion, className = '', children }) {
+  const wrapRef = useRef(null)
+
+  useEffect(() => {
+    if (reducedMotion) return undefined
+    const wrap = wrapRef.current
+    if (!wrap) return undefined
+    const inner = wrap.firstElementChild
+    if (!(inner instanceof HTMLElement)) return undefined
+    if (typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches) {
+      return undefined
+    }
+
+    const move = (e) => {
+      const r = wrap.getBoundingClientRect()
+      const cx = r.left + r.width / 2
+      const cy = r.top + r.height / 2
+      const dx = Math.max(-MAG_MAX_PX, Math.min(MAG_MAX_PX, (e.clientX - cx) * MAG_STRENGTH))
+      const dy = Math.max(-MAG_MAX_PX, Math.min(MAG_MAX_PX, (e.clientY - cy) * MAG_STRENGTH))
+      inner.style.transform = `translate3d(${dx}px, ${dy}px, 0)`
+    }
+    const leave = () => {
+      inner.style.transform = ''
+    }
+    wrap.addEventListener('pointermove', move)
+    wrap.addEventListener('pointerleave', leave)
+    return () => {
+      wrap.removeEventListener('pointermove', move)
+      wrap.removeEventListener('pointerleave', leave)
+      inner.style.transform = ''
+    }
+  }, [reducedMotion])
+
+  return (
+    <span ref={wrapRef} className={`magnetic-cta${className ? ` ${className}` : ''}`}>
+      {children}
+    </span>
+  )
 }
 
 function LanguageSwitcher({ lang, setLang, copy, className = '', onPick }) {
@@ -130,6 +212,7 @@ function App() {
   const [formStatus, setFormStatus] = useState(null)
   const formGotchaRef = useRef(null)
   const successCloseRef = useRef(null)
+  const heroRef = useRef(null)
 
   const langRef = useRef(lang)
   useEffect(() => {
@@ -360,14 +443,29 @@ function App() {
       <div className="nav-spacer" aria-hidden />
 
       <main id="top">
-        <section className="hero section hero--cinema">
+        <section ref={heroRef} className="hero section hero--cinema hero--lux">
+          <div className="hero__spacebase" aria-hidden />
           <div className="hero__gradient" aria-hidden />
           <div className="hero__orb hero__orb--a" aria-hidden />
           <div className="hero__orb hero__orb--b" aria-hidden />
           <div className="hero__orb hero__orb--c" aria-hidden />
+          <div className="hero__atmosphere" aria-hidden>
+            <div className="hero__nebula hero__nebula--a" />
+            <div className="hero__nebula hero__nebula--b" />
+            <div className="hero__nebula hero__nebula--c" />
+          </div>
+          <div className="hero__aurora" aria-hidden>
+            <div className="hero__aurora-band hero__aurora-band--1" />
+            <div className="hero__aurora-band hero__aurora-band--2" />
+          </div>
+          <div className="hero__microgrid" aria-hidden />
+          <div className="hero__stars" aria-hidden />
+          <div className="hero__parallaxGlow" aria-hidden />
+          <HeroCosmos reducedMotion={reducedMotion} anchorRef={heroRef} />
+          <div className="hero__vignette" aria-hidden />
 
           <div className="section__inner hero__grid">
-            <div className="hero__col">
+            <div className="hero__col hero__col--copy">
               <p className="hero__brand text-reveal">
                 <span className="text-reveal__inner">ELYSIOR</span>
               </p>
@@ -375,31 +473,40 @@ function App() {
                 {copy.hero.eyebrow}{' '}
                 <span className="eyebrow__en">{copy.hero.eyebrowAccent}</span>
               </p>
-              <h1 className="hero__title">
-                {heroWords.map((w, i) => (
-                  <span key={`${lang}-${w}-${i}`} className="hero__word" style={{ '--d': i }}>
-                    {w}
-                  </span>
-                ))}
-              </h1>
-              <p className="hero__sub">{copy.hero.sub}</p>
+              <div className="hero__headlineWrap">
+                <div className="hero__headlineBeams" aria-hidden />
+                <h1 className="hero__title">
+                  {heroWords.map((w, i) => (
+                    <span key={`${lang}-${w}-${i}`} className="hero__word" style={{ '--d': i }}>
+                      {w}
+                    </span>
+                  ))}
+                </h1>
+              </div>
+              <div className="hero__subBlock">
+                <p className="hero__sub">{copy.hero.sub}</p>
+              </div>
               <div className="hero__cta">
-                <a
-                  className="btn btn--primary btn--glow"
-                  href={CAL_STRATEGY}
-                  target="_blank"
-                  rel={CAL_LINK_REL}
-                >
-                  {copy.hero.ctaPrimary}
-                </a>
-                <a className="btn btn--ghost" href="#servicios">
-                  {copy.hero.ctaSecondary}
-                </a>
+                <MagneticCta reducedMotion={reducedMotion}>
+                  <a
+                    className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target"
+                    href={CAL_STRATEGY}
+                    target="_blank"
+                    rel={CAL_LINK_REL}
+                  >
+                    <span className="btn__shine">{copy.hero.ctaPrimary}</span>
+                  </a>
+                </MagneticCta>
+                <MagneticCta reducedMotion={reducedMotion}>
+                  <a className="btn btn--ghost btn--heroGhost magnetic-cta__target" href="#servicios">
+                    {copy.hero.ctaSecondary}
+                  </a>
+                </MagneticCta>
               </div>
             </div>
 
             <div className="hero__col hero__col--visual">
-              <div className="hero-mockup glass lift-hover">
+              <div className="hero-mockup hero-mockup--command glass lift-hover">
                 <div className="hero-mockup__chrome">
                   <span className="hero-mockup__dot" />
                   <span className="hero-mockup__dot" />
@@ -410,18 +517,38 @@ function App() {
                   <p className="hero-mockup__label">{copy.hero.mockupLabel}</p>
                   <h3 className="hero-mockup__title">{copy.hero.mockupTitle}</h3>
                   <p className="hero-mockup__text">{copy.hero.mockupText}</p>
+                  <ul className="hero-mockup__statusRow" aria-label={copy.hero.mockupStatusAria}>
+                    {copy.hero.mockupStatusChips.map((label) => (
+                      <li key={label} className="hero-mockup__status">
+                        <span className="hero-mockup__status-dot" aria-hidden />
+                        <span className="hero-mockup__status-label">{label}</span>
+                      </li>
+                    ))}
+                  </ul>
                   <div className="hero-mockup__rows">
                     <div className="hero-mockup__row">
                       <span className="hero-mockup__tag">{copy.hero.mockupTags[0]}</span>
-                      <span className="hero-mockup__bar hero-mockup__bar--wide" />
+                      <div className="hero-mockup__track">
+                        <div className="hero-mockup__fill hero-mockup__fill--1" />
+                      </div>
                     </div>
                     <div className="hero-mockup__row">
                       <span className="hero-mockup__tag">{copy.hero.mockupTags[1]}</span>
-                      <span className="hero-mockup__bar hero-mockup__bar--mid" />
+                      <div className="hero-mockup__track">
+                        <div className="hero-mockup__fill hero-mockup__fill--2" />
+                      </div>
                     </div>
                     <div className="hero-mockup__row">
                       <span className="hero-mockup__tag">{copy.hero.mockupTags[2]}</span>
-                      <span className="hero-mockup__bar hero-mockup__bar--anim" />
+                      <div className="hero-mockup__track">
+                        <div className="hero-mockup__fill hero-mockup__fill--3" />
+                      </div>
+                    </div>
+                    <div className="hero-mockup__row">
+                      <span className="hero-mockup__tag">{copy.hero.mockupTags[3]}</span>
+                      <div className="hero-mockup__track">
+                        <div className="hero-mockup__fill hero-mockup__fill--4 hero-mockup__fill--pulse" />
+                      </div>
                     </div>
                   </div>
                   <div className="hero-mockup__footer">
@@ -709,6 +836,7 @@ function App() {
                     {copy.footer.whatsapp}
                   </a>
                 </div>
+                <SocialLinks className="social-links--lead" />
               </div>
               <form
                 className="lead-form glass"
@@ -965,15 +1093,7 @@ function App() {
             <p className="footer__tagline">{copy.footer.tagline}</p>
             <p className="footer__geo-line">{copy.footer.geoLine}</p>
             <div className="footer__social">
-              <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-                in
-              </a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
-                ◎
-              </a>
-              <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X">
-                𝕏
-              </a>
+              <SocialLinks />
             </div>
             <a className="footer__email" href={`mailto:${CONTACT_EMAIL}`}>
               {CONTACT_EMAIL}
