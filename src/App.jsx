@@ -246,7 +246,7 @@ function App() {
 
   useEffect(() => {
     const onResize = () => {
-      if (window.matchMedia('(min-width: 900px)').matches) setNavOpen(false)
+      if (window.matchMedia('(min-width: 1200px)').matches) setNavOpen(false)
     }
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
