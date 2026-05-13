@@ -336,27 +336,6 @@ function App() {
   const t = copy.testimonios.items[carousel]
   const heroWords = copy.hero.titleWords
 
-  useEffect(() => {
-    if (!loaded) return undefined
-    const logCurrentHeroDesign = () => {
-      const hero = heroRef.current
-      if (!hero) return
-      const rectFor = (el) => {
-        if (!el) return null
-        const r = el.getBoundingClientRect()
-        return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height }
-      }
-      const badgeItems = [...hero.querySelectorAll('.hero__badges li')].map((el) => rectFor(el))
-      const orbs = [...hero.querySelectorAll('.hero-ambient-orbs__orb')].map((el) => rectFor(el))
-      // #region agent log
-      fetch('http://127.0.0.1:7594/ingest/29e1ab93-4a68-47e6-9a7c-1bf01deba8a8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'dfe161'},body:JSON.stringify({sessionId:'dfe161',runId:'post-fix',hypothesisId:'C1,C2,C3,C4',location:'src/App.jsx:332',message:'current hero design measurements',data:{viewport:{width:window.innerWidth,height:window.innerHeight,dpr:window.devicePixelRatio},hero:rectFor(hero),copyCol:rectFor(hero.querySelector('.hero__col--copy')),visualCol:rectFor(hero.querySelector('.hero__col--visual')),badges:rectFor(hero.querySelector('.hero__badges')),badgeItems,ambientOrbs:rectFor(hero.querySelector('.hero-ambient-orbs')),orbs,overflow:{documentScrollWidth:document.documentElement.scrollWidth,bodyScrollWidth:document.body.scrollWidth,hasHorizontalOverflow:document.documentElement.scrollWidth>window.innerWidth}},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
-    }
-    logCurrentHeroDesign()
-    window.addEventListener('resize', logCurrentHeroDesign)
-    return () => window.removeEventListener('resize', logCurrentHeroDesign)
-  }, [loaded])
-
   return (
     <div className={`landing${loaded ? ' landing--loaded' : ''}`}>
       {!loaded ? (
