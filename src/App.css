@@ -697,6 +697,64 @@ main {
   overflow: hidden;
 }
 
+.hero-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero__depth {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero__depth--far {
+  inset: -8% -6% -6%;
+  transform: translate3d(calc(var(--hero-mx, 0) * -18px), calc(var(--hero-my, 0) * -14px), 0);
+}
+
+.hero__depth--aurora {
+  inset: -10% -8%;
+  transform: translate3d(calc(var(--hero-mx, 0) * -10px), calc(var(--hero-my, 0) * -8px), 0);
+}
+
+.hero__depth--stars {
+  transform: translate3d(calc(var(--hero-mx, 0) * -6px), calc(var(--hero-my, 0) * -5px), 0);
+}
+
+.hero-atmosphere--reduced .hero__depth--far,
+.hero-atmosphere--reduced .hero__depth--aurora,
+.hero-atmosphere--reduced .hero__depth--stars {
+  transform: none !important;
+  transition: none !important;
+}
+
+.hero-atmosphere--reduced .hero__beams,
+.hero-atmosphere--reduced .hero__glassField {
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Headline beams live in the grid sibling, not inside .hero-atmosphere */
+.hero-atmosphere--reduced ~ .section__inner.hero__grid .hero__headlineBeams {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.hero-atmosphere--reduced ~ .section__inner.hero__grid .hero__word,
+.hero-atmosphere--reduced ~ .section__inner.hero__grid .text-reveal__inner {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+}
+
 .hero--lux .section__inner.hero__grid {
   max-width: 1180px;
 }
@@ -709,6 +767,14 @@ main {
   .hero__grid {
     gap: 36px;
   }
+
+  .hero__beams {
+    opacity: 0.26;
+  }
+
+  .hero__glassOrb--c {
+    opacity: 0.14;
+  }
 }
 
 .hero__spacebase {
@@ -717,23 +783,24 @@ main {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 90% 70% at 50% -10%, rgba(14, 22, 48, 0.55) 0%, transparent 50%),
-    radial-gradient(ellipse 70% 55% at 100% 20%, rgba(6, 10, 26, 0.85) 0%, transparent 45%),
-    linear-gradient(172deg, #020308 0%, #050a18 42%, #070d1c 100%);
+    radial-gradient(ellipse 100% 78% at 50% -18%, rgba(12, 20, 44, 0.62) 0%, transparent 56%),
+    radial-gradient(ellipse 72% 58% at 100% 18%, rgba(5, 10, 28, 0.88) 0%, transparent 48%),
+    linear-gradient(174deg, #010206 0%, #040814 38%, #060c18 100%);
 }
 
 .hero__gradient {
   position: absolute;
-  inset: -38% -20% 20%;
+  inset: -42% -24% 18%;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.92;
   background:
-    radial-gradient(ellipse 80% 50% at 20% 25%, rgba(72, 108, 200, 0.1) 0%, transparent 55%),
-    radial-gradient(ellipse 65% 45% at 85% 30%, rgba(200, 170, 120, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 75% 40% at 50% 100%, rgba(140, 110, 200, 0.07) 0%, transparent 48%);
+    radial-gradient(ellipse 88% 52% at 18% 22%, rgba(56, 88, 168, 0.09) 0%, transparent 58%),
+    radial-gradient(ellipse 72% 48% at 88% 28%, rgba(190, 165, 118, 0.045) 0%, transparent 52%),
+    radial-gradient(ellipse 80% 44% at 50% 100%, rgba(120, 95, 168, 0.055) 0%, transparent 50%);
 }
 
-/* Large floating gas / nebula blobs */
+/* Ultra-soft floating gas / nebula (living atmosphere, not interface) */
 
 .hero__gas {
   position: absolute;
@@ -746,232 +813,333 @@ main {
 .hero__gasBlob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(72px);
-  mix-blend-mode: screen;
-  opacity: 0.38;
-  will-change: transform;
+  filter: blur(92px);
+  mix-blend-mode: soft-light;
+  opacity: 0.26;
   animation:
-    heroGasDrift 64s ease-in-out infinite alternate,
-    heroGasCoreDrift 92s ease-in-out infinite alternate-reverse;
+    heroGasDrift 88s ease-in-out infinite alternate,
+    heroGasCoreDrift 118s ease-in-out infinite alternate-reverse;
 }
 
 .hero__gasBlob::after {
   content: '';
   position: absolute;
-  inset: 18%;
+  inset: 14%;
   border-radius: 50%;
   pointer-events: none;
-  mix-blend-mode: screen;
-  opacity: 0.55;
-  background: radial-gradient(circle at 42% 48%, rgba(230, 236, 255, 0.32) 0%, rgba(140, 170, 240, 0.12) 42%, transparent 58%);
-  filter: blur(36px);
-  animation: heroGasCoreDrift 108s ease-in-out infinite alternate-reverse;
+  mix-blend-mode: soft-light;
+  opacity: 0.4;
+  background: radial-gradient(circle at 44% 46%, rgba(220, 228, 248, 0.14) 0%, rgba(100, 130, 200, 0.06) 48%, transparent 62%);
+  filter: blur(48px);
+  animation: heroGasCoreDrift 132s ease-in-out infinite alternate-reverse;
 }
 
 .hero__gasBlob--1 {
-  width: min(520px, 70vw);
-  height: min(420px, 58vw);
-  top: -12%;
-  left: -18%;
-  background: radial-gradient(circle at 40% 45%, rgba(88, 118, 210, 0.52) 0%, transparent 62%);
-  animation-duration: 72s, 96s;
+  width: min(720px, 92vw);
+  height: min(560px, 72vw);
+  top: -18%;
+  left: -22%;
+  background: radial-gradient(circle at 38% 42%, rgba(72, 98, 175, 0.38) 0%, transparent 64%);
+  animation-duration: 96s, 124s;
 }
 
 .hero__gasBlob--2 {
-  width: min(440px, 58vw);
-  height: min(380px, 52vw);
-  top: 8%;
-  right: -14%;
-  opacity: 0.32;
-  background: radial-gradient(circle at 55% 50%, rgba(160, 130, 220, 0.46) 0%, transparent 60%);
-  animation-duration: 80s, 104s;
-  animation-delay: -12s, -18s;
+  width: min(620px, 82vw);
+  height: min(500px, 64vw);
+  top: 4%;
+  right: -20%;
+  opacity: 0.2;
+  background: radial-gradient(circle at 52% 48%, rgba(140, 118, 195, 0.32) 0%, transparent 62%);
+  animation-duration: 104s, 132s;
+  animation-delay: -14s, -22s;
 }
 
 .hero__gasBlob--3 {
-  width: min(360px, 48vw);
-  height: min(320px, 44vw);
-  bottom: -6%;
-  left: 8%;
-  opacity: 0.3;
-  background: radial-gradient(circle at 50% 40%, rgba(210, 180, 130, 0.32) 0%, transparent 58%);
-  animation-duration: 68s, 88s;
-  animation-delay: -22s, -8s;
+  width: min(480px, 62vw);
+  height: min(420px, 54vw);
+  bottom: -10%;
+  left: 4%;
+  opacity: 0.18;
+  background: radial-gradient(circle at 48% 38%, rgba(200, 175, 130, 0.22) 0%, transparent 60%);
+  animation-duration: 84s, 108s;
+  animation-delay: -28s, -10s;
 }
 
 .hero__gasBlob--4 {
-  width: min(400px, 52vw);
-  height: min(340px, 46vw);
-  top: 42%;
-  left: 28%;
-  opacity: 0.24;
-  background: radial-gradient(circle at 48% 52%, rgba(100, 80, 160, 0.4) 0%, transparent 58%);
-  animation-duration: 76s, 112s;
-  animation-delay: -8s, -24s;
+  width: min(540px, 70vw);
+  height: min(460px, 58vw);
+  top: 36%;
+  left: 22%;
+  opacity: 0.16;
+  background: radial-gradient(circle at 50% 50%, rgba(88, 72, 145, 0.28) 0%, transparent 60%);
+  animation-duration: 92s, 128s;
+  animation-delay: -10s, -30s;
 }
 
 .hero__gasBlob--5 {
-  width: min(300px, 40vw);
-  height: min(280px, 38vw);
-  bottom: 18%;
-  right: 12%;
-  opacity: 0.28;
-  background: radial-gradient(circle at 40% 55%, rgba(76, 110, 190, 0.42) 0%, transparent 55%);
-  animation-duration: 58s, 84s;
-  animation-delay: -30s, -12s;
+  width: min(400px, 52vw);
+  height: min(360px, 46vw);
+  bottom: 12%;
+  right: 8%;
+  opacity: 0.19;
+  background: radial-gradient(circle at 42% 52%, rgba(64, 95, 175, 0.3) 0%, transparent 58%);
+  animation-duration: 76s, 102s;
+  animation-delay: -36s, -14s;
 }
 
 .hero__gasBlob--6 {
-  width: min(280px, 36vw);
-  height: min(260px, 34vw);
-  top: 22%;
-  left: 42%;
-  opacity: 0.22;
-  background: radial-gradient(circle at 50% 50%, rgba(180, 160, 220, 0.36) 0%, transparent 56%);
-  animation-duration: 88s, 120s;
-  animation-delay: -4s, -20s;
+  width: min(360px, 46vw);
+  height: min(320px, 42vw);
+  top: 18%;
+  left: 48%;
+  opacity: 0.14;
+  background: radial-gradient(circle at 50% 50%, rgba(165, 148, 210, 0.24) 0%, transparent 58%);
+  animation-duration: 112s, 148s;
+  animation-delay: -6s, -26s;
+}
+
+.hero__gasBlob--7 {
+  inset: 44% -18% -28% -18%;
+  width: auto;
+  height: auto;
+  opacity: 0.1;
+  filter: blur(120px);
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    rgba(45, 72, 140, 0.22) 0%,
+    rgba(100, 80, 150, 0.08) 45%,
+    transparent 70%
+  );
+  animation-duration: 120s, 160s;
+  animation-delay: -18s, -40s;
+}
+
+.hero__gasBlob--7::after {
+  opacity: 0.28;
 }
 
 @keyframes heroGasDrift {
   0% {
-    transform: translate(-2.4%, -1.6%) scale(1);
+    transform: translate3d(-1.5%, -1%, 0) scale(1);
   }
   100% {
-    transform: translate(2.6%, 2%) scale(1.07);
+    transform: translate3d(1.6%, 1.3%, 0) scale(1.04);
   }
 }
 
 @keyframes heroGasCoreDrift {
   0% {
-    transform: translate(1.2%, 0.8%) scale(0.96);
+    transform: translate3d(0.85%, 0.5%, 0) scale(0.98);
   }
   100% {
-    transform: translate(-1.4%, -1.1%) scale(1.05);
+    transform: translate3d(-1%, -0.75%, 0) scale(1.025);
   }
 }
 
-/* Dual soft aurora veils */
+/* Aurora — soft luminous veils */
 
 .hero__aurora {
   position: absolute;
   inset: -8% -12%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.42;
-  mix-blend-mode: screen;
+  opacity: 0.28;
+  mix-blend-mode: soft-light;
 }
 
 .hero__aurora-band {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  filter: blur(56px);
-  opacity: 0.5;
+  filter: blur(68px);
+  opacity: 0.48;
 }
 
 .hero__aurora-band--1 {
   background: linear-gradient(
     108deg,
     transparent 0%,
-    rgba(72, 100, 180, 0.16) 38%,
-    rgba(150, 120, 200, 0.12) 52%,
-    rgba(200, 170, 120, 0.08) 62%,
+    rgba(62, 92, 168, 0.1) 38%,
+    rgba(130, 108, 185, 0.08) 52%,
+    rgba(185, 160, 118, 0.05) 62%,
     transparent 82%
   );
-  animation: heroAuroraSoft 80s ease-in-out infinite;
+  animation: heroAuroraSoft 96s ease-in-out infinite;
 }
 
 .hero__aurora-band--2 {
-  opacity: 0.38;
-  filter: blur(64px);
+  opacity: 0.32;
+  filter: blur(78px);
   background: linear-gradient(
     154deg,
     transparent 0%,
-    rgba(120, 90, 170, 0.1) 40%,
-    rgba(72, 110, 200, 0.09) 55%,
-    rgba(200, 175, 130, 0.05) 68%,
+    rgba(108, 82, 158, 0.07) 40%,
+    rgba(58, 95, 175, 0.06) 55%,
+    rgba(185, 165, 118, 0.035) 68%,
     transparent 88%
   );
-  animation: heroAuroraSoft2 112s ease-in-out infinite;
-  animation-delay: -24s;
+  animation: heroAuroraSoft2 132s ease-in-out infinite;
+  animation-delay: -28s;
 }
 
 @keyframes heroAuroraSoft {
   0%,
   100% {
-    transform: translate(-3%, 2%) rotate(-1deg) scale(1);
+    transform: translate3d(-2.2%, 1.4%, 0) rotate(-0.8deg) scale(1);
   }
   50% {
-    transform: translate(4%, -2%) rotate(1deg) scale(1.03);
+    transform: translate3d(2.6%, -1.6%, 0) rotate(0.8deg) scale(1.02);
   }
 }
 
 @keyframes heroAuroraSoft2 {
   0%,
   100% {
-    transform: translate(2.5%, -1.5%) rotate(0.6deg) scale(1.02);
+    transform: translate3d(1.8%, -1.1%, 0) rotate(0.5deg) scale(1.01);
   }
   50% {
-    transform: translate(-3.2%, 2.2%) rotate(-0.8deg) scale(1.04);
+    transform: translate3d(-2.4%, 1.6%, 0) rotate(-0.6deg) scale(1.025);
   }
 }
 
-/* Faint horizon grid + scan haze (instrument deck, no UI) */
+/* Cinematic volumetric light (slow, minimal) */
 
-.hero__horizon {
+.hero__beams {
   position: absolute;
-  inset: 0;
+  inset: -28% -24%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.065;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 52px 52px;
-  background-position: 0 0, 0 0;
-  mask-image: radial-gradient(ellipse 100% 72% at 50% 58%, black 0%, transparent 74%);
-  -webkit-mask-image: radial-gradient(ellipse 100% 72% at 50% 58%, black 0%, transparent 74%);
-  animation: heroHorizonDrift 200s linear infinite;
+  overflow: hidden;
+  opacity: 0.34;
+  mix-blend-mode: soft-light;
+  transform: translate3d(calc(var(--hero-mx, 0) * 16px), calc(var(--hero-my, 0) * 12px), 0);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+.hero__beam {
+  position: absolute;
+  top: -12%;
+  width: 42%;
+  height: 125%;
+  filter: blur(32px);
+  border-radius: 42%;
+  background: linear-gradient(
+    188deg,
+    rgba(210, 220, 255, 0.11) 0%,
+    rgba(72, 110, 200, 0.05) 38%,
+    transparent 68%
+  );
+}
+
+.hero__beam--1 {
+  left: 8%;
+  opacity: 0.46;
+  transform-origin: 50% 0%;
+  transform: rotate(-11deg);
+  animation: heroBeamDrift 108s ease-in-out infinite;
+}
+
+.hero__beam--2 {
+  left: 38%;
+  opacity: 0.34;
+  transform-origin: 50% 0%;
+  transform: rotate(4deg);
+  animation: heroBeamDrift2 124s ease-in-out infinite;
+  animation-delay: -40s;
+}
+
+.hero__beam--3 {
+  right: 4%;
+  left: auto;
+  width: 36%;
+  opacity: 0.3;
+  transform-origin: 50% 0%;
+  transform: rotate(13deg);
+  animation: heroBeamDrift 92s ease-in-out infinite reverse;
+  animation-delay: -18s;
+}
+
+@keyframes heroBeamDrift {
+  0%,
+  100% {
+    transform: rotate(-11deg) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(-9deg) translate3d(0.8%, 1.2%, 0);
+  }
+}
+
+@keyframes heroBeamDrift2 {
+  0%,
+  100% {
+    transform: rotate(4deg) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(6deg) translate3d(-0.6%, 0.9%, 0);
+  }
+}
+
+/* Subtle energy haze (no grid, no dashboard cues) */
 
 .hero__haze {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.055;
+  opacity: 0.038;
   mix-blend-mode: soft-light;
   background: repeating-linear-gradient(
     0deg,
     transparent,
-    transparent 5px,
-    rgba(255, 255, 255, 0.028) 5px,
-    rgba(255, 255, 255, 0.028) 6px
+    transparent 6px,
+    rgba(255, 255, 255, 0.022) 6px,
+    rgba(255, 255, 255, 0.022) 7px
   );
-  mask-image: radial-gradient(ellipse 90% 65% at 50% 50%, black 0%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 65% at 50% 50%, black 0%, transparent 70%);
-  animation: heroHazeScroll 36s linear infinite;
-}
-
-@keyframes heroHorizonDrift {
-  from {
-    transform: translate(0, 0);
-  }
-  to {
-    transform: translate(-18px, -10px);
-  }
+  mask-image: radial-gradient(ellipse 92% 68% at 50% 48%, black 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse 92% 68% at 50% 48%, black 0%, transparent 72%);
+  animation: heroHazeScroll 64s linear infinite;
 }
 
 @keyframes heroHazeScroll {
   from {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateY(18px);
+    transform: translate3d(0, 14px, 0);
   }
 }
 
-/* Stars — three quiet layers */
+/* Layered depth fog */
+
+.hero__fog {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero__fog--deep {
+  background:
+    radial-gradient(ellipse 115% 85% at 50% 105%, rgba(1, 3, 10, 0.65) 0%, transparent 52%),
+    radial-gradient(ellipse 95% 70% at 50% -5%, rgba(2, 5, 14, 0.42) 0%, transparent 48%);
+  mix-blend-mode: multiply;
+  opacity: 0.88;
+}
+
+.hero__fog--lift {
+  inset: -8% -8% 32%;
+  background: radial-gradient(
+    ellipse 68% 52% at 50% 22%,
+    rgba(255, 255, 255, 0.028) 0%,
+    rgba(120, 145, 210, 0.04) 38%,
+    transparent 62%
+  );
+  filter: blur(48px);
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+}
+
+/* Stars — three whisper-quiet layers */
 
 .hero__starfield {
   position: absolute;
@@ -984,72 +1152,141 @@ main {
 .hero__stars {
   position: absolute;
   inset: -3%;
-  mix-blend-mode: screen;
+  mix-blend-mode: soft-light;
   background-repeat: repeat;
 }
 
 .hero__stars--deep {
-  opacity: 0.22;
-  background-image: radial-gradient(circle at center, rgba(248, 250, 255, 0.44) 0.5px, transparent 0.58px);
-  background-size: 88px 88px;
-  animation: heroStarDriftSlow 140s linear infinite, heroStarTwinkleSoft 8s ease-in-out infinite;
+  opacity: 0.14;
+  background-image: radial-gradient(circle at center, rgba(248, 250, 255, 0.38) 0.45px, transparent 0.55px);
+  background-size: 96px 96px;
+  animation: heroStarDriftSlow 168s linear infinite;
 }
 
 .hero__stars--mid {
-  opacity: 0.16;
-  background-image: radial-gradient(circle at center, rgba(186, 200, 255, 0.4) 0.42px, transparent 0.5px);
-  background-size: 72px 72px;
+  opacity: 0.1;
+  background-image: radial-gradient(circle at center, rgba(186, 200, 255, 0.34) 0.38px, transparent 0.48px);
+  background-size: 78px 78px;
   background-position: 30px 22px;
-  animation: heroStarDriftSlow 120s linear infinite reverse, heroStarTwinkleSoft 10s ease-in-out infinite 1.5s;
+  animation: heroStarDriftSlow 148s linear infinite reverse;
 }
 
 .hero__stars--near {
-  opacity: 0.11;
-  background-image: radial-gradient(circle at center, rgba(248, 244, 230, 0.5) 0.55px, transparent 0.62px);
-  background-size: 56px 56px;
+  opacity: 0.075;
+  background-image: radial-gradient(circle at center, rgba(248, 244, 230, 0.42) 0.48px, transparent 0.58px);
+  background-size: 60px 60px;
   background-position: 14px 36px;
-  animation: heroStarDriftNear 100s linear infinite, heroStarTwinkleSoft 12s ease-in-out infinite 0.8s;
+  animation: heroStarDriftNear 128s linear infinite;
 }
 
 @keyframes heroStarDriftSlow {
   from {
-    transform: translate(0, 0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate(-14px, -10px);
+    transform: translate3d(-12px, -8px, 0);
   }
 }
 
 @keyframes heroStarDriftNear {
   from {
-    transform: translate(0, 0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate(-20px, -14px);
+    transform: translate3d(-16px, -11px, 0);
   }
 }
 
-@keyframes heroStarTwinkleSoft {
-  0%,
-  100% {
-    opacity: 0.14;
-  }
-  50% {
-    opacity: 0.24;
-  }
-}
+/* Mouse-reactive ambient glow */
 
 .hero__parallaxGlow {
   position: absolute;
-  inset: -12% -8%;
+  inset: -14% -10%;
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse 56% 50% at calc(48% + var(--hero-mx, 0) * 12%) calc(42% + var(--hero-my, 0) * 11%),
-    rgba(72, 100, 180, 0.11) 0%,
-    rgba(140, 110, 180, 0.05) 38%,
-    transparent 62%
+  opacity: 0.95;
+  background:
+    radial-gradient(
+      ellipse 52% 46% at calc(47% + var(--hero-mx, 0) * 15%) calc(39% + var(--hero-my, 0) * 13%),
+      rgba(58, 132, 255, 0.065) 0%,
+      rgba(110, 88, 170, 0.035) 44%,
+      transparent 66%
+    ),
+    radial-gradient(
+      ellipse 58% 50% at calc(52% + var(--hero-mx, 0) * 9%) calc(50% + var(--hero-my, 0) * 10%),
+      rgba(212, 184, 120, 0.035) 0%,
+      transparent 54%
+    );
+  transition: opacity 0.6s ease;
+}
+
+/* Floating glass orbs — atmosphere only */
+
+.hero__glassField {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform: translate3d(calc(var(--hero-mx, 0) * 12px), calc(var(--hero-my, 0) * 9px), 0);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero__glassOrb {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(
+    148deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(16, 22, 42, 0.1) 48%,
+    rgba(4, 8, 18, 0.05) 100%
   );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 32px 90px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  opacity: 0.32;
+  animation: heroGlassFloat 56s ease-in-out infinite;
+}
+
+.hero__glassOrb--a {
+  width: clamp(88px, 14vw, 140px);
+  height: clamp(88px, 14vw, 140px);
+  top: 10%;
+  right: 4%;
+  animation-duration: 62s;
+}
+
+.hero__glassOrb--b {
+  width: clamp(52px, 9vw, 88px);
+  height: clamp(52px, 9vw, 88px);
+  top: 52%;
+  right: 18%;
+  opacity: 0.26;
+  animation-duration: 48s;
+  animation-delay: -12s;
+}
+
+.hero__glassOrb--c {
+  width: clamp(120px, 20vw, 200px);
+  height: clamp(120px, 20vw, 200px);
+  bottom: 6%;
+  left: -4%;
+  opacity: 0.22;
+  animation-duration: 72s;
+  animation-delay: -24s;
+}
+
+@keyframes heroGlassFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-8px, -14px, 0) scale(1.02);
+  }
 }
 
 .hero-cosmos {
@@ -1057,27 +1294,26 @@ main {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 0.5;
 }
 
 .hero-cosmos--reduced {
-  opacity: 0.62;
+  opacity: 0.4;
 }
 
 @media (max-width: 639px) {
   .hero-cosmos {
-    opacity: 0.68;
+    opacity: 0.42;
   }
 
   .hero-cosmos--reduced {
-    opacity: 0.56;
+    opacity: 0.34;
   }
 }
 
 .hero-cosmos__wrap {
   position: absolute;
   inset: 0;
-  will-change: transform;
 }
 
 .hero-cosmos__canvas {
@@ -1093,16 +1329,16 @@ main {
   z-index: 0;
   pointer-events: none;
   background: radial-gradient(
-    ellipse 82% 72% at 50% 44%,
-    transparent 28%,
-    rgba(0, 0, 0, 0.28) 78%,
-    rgba(0, 0, 0, 0.45) 100%
+    ellipse 78% 68% at 50% 38%,
+    transparent 22%,
+    rgba(0, 0, 0, 0.26) 68%,
+    rgba(0, 0, 0, 0.52) 100%
   );
-  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.28);
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.36);
 }
 .hero__grid {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: grid;
   width: 100%;
   min-width: 0;
@@ -1120,12 +1356,15 @@ main {
 
 .hero__col--copy {
   position: relative;
+  z-index: 4;
   width: 100%;
   min-width: 0;
   max-width: 620px;
 }
 
 .hero__col--visual {
+  position: relative;
+  z-index: 2;
   display: flex;
   width: 100%;
   min-width: 0;
@@ -1179,6 +1418,7 @@ main {
 
 .hero__headlineWrap {
   position: relative;
+  z-index: 2;
   margin-bottom: clamp(28px, 4vw, 36px);
 }
 
@@ -1189,35 +1429,36 @@ main {
   width: 118%;
   height: 185%;
   pointer-events: none;
+  transform: translate3d(calc(var(--hero-mx, 0) * 8px), calc(var(--hero-my, 0) * 6px), 0);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
   background:
-    radial-gradient(ellipse 55% 42% at 28% 38%, rgba(77, 124, 239, 0.14) 0%, transparent 62%),
-    radial-gradient(ellipse 48% 38% at 72% 55%, rgba(167, 139, 250, 0.1) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 42% at 28% 38%, rgba(77, 124, 239, 0.09) 0%, transparent 62%),
+    radial-gradient(ellipse 48% 38% at 72% 55%, rgba(167, 139, 250, 0.06) 0%, transparent 58%),
     linear-gradient(
       102deg,
       transparent 0%,
-      rgba(212, 184, 120, 0.06) 42%,
-      rgba(77, 124, 239, 0.08) 52%,
+      rgba(212, 184, 120, 0.04) 42%,
+      rgba(77, 124, 239, 0.05) 52%,
       transparent 88%
     );
-  opacity: 0.65;
-  filter: blur(2px);
-  animation: heroBeamsDrift 72s ease-in-out infinite alternate;
+  opacity: 0.48;
+  filter: blur(3px);
+  animation: heroBeamsDrift 88s ease-in-out infinite alternate;
 }
 
 @keyframes heroBeamsDrift {
-  0% {
-    transform: translate(-1%, 0) scale(1);
-    opacity: 0.58;
-  }
+  0%,
   100% {
-    transform: translate(1%, -0.6%) scale(1.015);
-    opacity: 0.72;
+    opacity: 0.44;
+  }
+  50% {
+    opacity: 0.48;
   }
 }
 
 .hero__title {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -1229,7 +1470,10 @@ main {
   letter-spacing: var(--tracking-tight);
   margin: 0;
   color: var(--text-strong);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.55),
+    0 20px 56px rgba(0, 0, 0, 0.42),
+    0 0 1px rgba(0, 0, 0, 0.85);
 }
 
 .hero__word {
@@ -1237,7 +1481,6 @@ main {
   opacity: 0;
   transform: translateY(22px);
   animation: wordIn 0.85s var(--ease-out) forwards;
-  animation-delay: calc(0.08s + (var(--d) * 0.06s));
 }
 
 @keyframes wordIn {
@@ -1279,6 +1522,8 @@ main {
 }
 
 .hero__cta {
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   gap: clamp(12px, 2vw, 16px);
@@ -3994,12 +4239,16 @@ main {
     animation: heroReducedDrift 200s ease-in-out infinite alternate-reverse !important;
   }
 
-  .hero__horizon {
-    animation: heroReducedHorizon 240s linear infinite !important;
+  .hero__beam {
+    animation: none !important;
   }
 
   .hero__haze {
     animation: heroReducedHaze 120s linear infinite !important;
+  }
+
+  .hero__glassOrb {
+    animation: heroReducedAmbient 52s ease-in-out infinite !important;
   }
 
   .hero-ambient-orbs__orb {
@@ -4017,7 +4266,7 @@ main {
   .hero__stars--deep,
   .hero__stars--mid,
   .hero__stars--near {
-    animation: heroReducedStarfield 90s linear infinite, heroReducedTwinkle 14s ease-in-out infinite !important;
+    animation: heroReducedStarfield 90s linear infinite !important;
   }
 
   .hero .btn--heroPrimary::before {
@@ -4075,12 +4324,10 @@ main {
 @keyframes heroReducedBeams {
   0%,
   100% {
-    transform: translate(-0.4%, 0) scale(1);
-    opacity: 0.78;
+    opacity: 0.44;
   }
   50% {
-    transform: translate(0.4%, -0.3%) scale(1.01);
-    opacity: 0.88;
+    opacity: 0.54;
   }
 }
 
@@ -4093,32 +4340,13 @@ main {
   }
 }
 
-@keyframes heroReducedTwinkle {
-  0%,
-  100% {
-    opacity: 0.26;
-  }
-  50% {
-    opacity: 0.36;
-  }
-}
-
 @keyframes heroReducedAmbient {
   0%,
   100% {
-    transform: translate(0, 0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate(-2px, -3px) scale(1.01);
-  }
-}
-
-@keyframes heroReducedHorizon {
-  from {
-    transform: translate(0, 0);
-  }
-  to {
-    transform: translate(-8px, -4px);
+    transform: translate3d(-2px, -3px, 0) scale(1.01);
   }
 }
 

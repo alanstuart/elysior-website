@@ -5,10 +5,10 @@ function clamp(n, lo, hi) {
 }
 
 function particleCount() {
-  if (typeof window === 'undefined') return 105
-  if (window.matchMedia('(max-width: 639px)').matches) return 48
-  if (window.matchMedia('(max-width: 1023px)').matches) return 72
-  return 105
+  if (typeof window === 'undefined') return 78
+  if (window.matchMedia('(max-width: 639px)').matches) return 38
+  if (window.matchMedia('(max-width: 1023px)').matches) return 56
+  return 78
 }
 
 function velocityScale() {
@@ -19,8 +19,7 @@ function velocityScale() {
 }
 
 function useLighterComposite() {
-  if (typeof window === 'undefined') return true
-  return window.matchMedia('(min-width: 640px)').matches
+  return false
 }
 
 function initParticles(w, h, n) {
@@ -31,9 +30,9 @@ function initParticles(w, h, n) {
   for (let i = 0; i < n; i += 1) {
     const depth = Math.random()
     const isMacro = i < macroN
-    const vy = -(0.022 + Math.random() * 0.055) * vs * (isMacro ? 0.55 : 1)
-    const vx = (Math.random() - 0.5) * 0.048 * vs * (isMacro ? 0.65 : 1)
-    const baseR = isMacro ? 1.15 + Math.random() * 1.35 : 0.35 + Math.random() * 0.75
+    const vy = -(0.012 + Math.random() * 0.038) * vs * (isMacro ? 0.5 : 1)
+    const vx = (Math.random() - 0.5) * 0.032 * vs * (isMacro ? 0.55 : 1)
+    const baseR = isMacro ? 0.85 + Math.random() * 1.05 : 0.28 + Math.random() * 0.58
     out.push({
       x: Math.random() * w,
       y: Math.random() * h,
@@ -41,8 +40,8 @@ function initParticles(w, h, n) {
       vy,
       r: baseR * (0.55 + depth * 0.5) * (isMacro ? 1 : 0.85),
       tw: Math.random() * Math.PI * 2,
-      twSpeed: (0.006 + Math.random() * 0.016) * vs * (isMacro ? 0.7 : 1),
-      drift: (Math.random() - 0.5) * 0.012 * vs,
+      twSpeed: (0.0035 + Math.random() * 0.01) * vs * (isMacro ? 0.65 : 1),
+      drift: (Math.random() - 0.5) * 0.008 * vs,
       hue: Math.random(),
       depth,
       macro: isMacro,
@@ -59,15 +58,15 @@ function paintParticles(ctx, particles, w, h, lighter) {
   }
   for (let i = 0; i < particles.length; i += 1) {
     const p = particles[i]
-    const twinkle = 0.38 + Math.sin(p.tw) * 0.34
-    const macroBoost = p.macro ? 1.45 : 1
-    const baseA = twinkle * (0.14 + p.hue * 0.18) * (0.42 + p.depth * 0.52) * macroBoost
+    const twinkle = 0.42 + Math.sin(p.tw) * 0.22
+    const macroBoost = p.macro ? 1.2 : 1
+    const baseA = twinkle * (0.08 + p.hue * 0.1) * (0.38 + p.depth * 0.48) * macroBoost
     if (p.hue < 0.34) {
-      ctx.fillStyle = `rgba(236, 224, 200, ${Math.min(0.85, baseA)})`
+      ctx.fillStyle = `rgba(228, 218, 198, ${Math.min(0.55, baseA)})`
     } else if (p.hue < 0.67) {
-      ctx.fillStyle = `rgba(165, 188, 245, ${Math.min(0.85, baseA)})`
+      ctx.fillStyle = `rgba(148, 168, 218, ${Math.min(0.52, baseA)})`
     } else {
-      ctx.fillStyle = `rgba(205, 188, 248, ${Math.min(0.85, baseA)})`
+      ctx.fillStyle = `rgba(188, 176, 228, ${Math.min(0.5, baseA)})`
     }
     ctx.beginPath()
     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
@@ -116,8 +115,17 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
       particles = initParticles(w, h, particleCount())
     }
 
+    let resizeDebounce = 0
+    const scheduleResize = () => {
+      window.clearTimeout(resizeDebounce)
+      resizeDebounce = window.setTimeout(() => {
+        resizeDebounce = 0
+        resize()
+      }, 140)
+    }
+
     const ro = new ResizeObserver(() => {
-      resize()
+      scheduleResize()
     })
     ro.observe(anchor)
     resize()
@@ -127,10 +135,10 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
       if (r.width < 1 || r.height < 1) return
       const nx = (e.clientX - r.left) / r.width - 0.5
       const ny = (e.clientY - r.top) / r.height - 0.5
-      targetTx = clamp(nx, -0.5, 0.5) * 18
-      targetTy = clamp(ny, -0.5, 0.5) * 13
-      anchor.style.setProperty('--hero-mx', String(nx * 1.55))
-      anchor.style.setProperty('--hero-my', String(ny * 1.45))
+      targetTx = clamp(nx, -0.5, 0.5) * 10
+      targetTy = clamp(ny, -0.5, 0.5) * 8
+      anchor.style.setProperty('--hero-mx', String(nx * 1.35))
+      anchor.style.setProperty('--hero-my', String(ny * 1.28))
     }
 
     const onPointerLeave = () => {
@@ -149,8 +157,8 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
         return
       }
 
-      tx += (targetTx - tx) * 0.048
-      ty += (targetTy - ty) * 0.048
+      tx += (targetTx - tx) * 0.03
+      ty += (targetTy - ty) * 0.03
       wrap.style.transform = `translate3d(${tx}px, ${ty}px, 0)`
 
       moveTick += 1
@@ -170,8 +178,8 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
     }
 
     const tickReduced = () => {
-      tx += (targetTx - tx) * 0.035
-      ty += (targetTy - ty) * 0.035
+      tx += (targetTx - tx) * 0.03
+      ty += (targetTy - ty) * 0.03
       wrap.style.transform = `translate3d(${tx}px, ${ty}px, 0)`
       for (let i = 0; i < particles.length; i += 1) {
         const p = particles[i]
@@ -198,6 +206,8 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
     document.addEventListener('visibilitychange', onVisibility)
 
     return () => {
+      window.clearTimeout(resizeDebounce)
+      resizeDebounce = 0
       cancelAnimationFrame(raf)
       raf = 0
       ro.disconnect()
