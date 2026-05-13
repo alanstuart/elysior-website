@@ -5,12 +5,19 @@ import './App.css'
  * (same project, imported here per maintainability).
  */
 import { getCopy, LANG_CODES, LANG_STORAGE_KEY } from './elysiorTranslations.js'
-import { HeroCosmos } from './HeroCosmos.jsx'
+import { HeroAtmosphere } from './HeroAtmosphere.jsx'
 
 const WHATSAPP_PREFILL = 'Hola, quiero más información sobre sus servicios.'
 const WHATSAPP_URL = `https://wa.me/50660256080?text=${encodeURIComponent(WHATSAPP_PREFILL)}`
 const WHATSAPP_LINK_REL = 'noopener noreferrer'
-const CONTACT_EMAIL = 'hola@elysior.studio'
+const CONTACT_EMAIL = 'contact@elysiorglobal.com'
+const CAL_STRATEGY = 'https://cal.com/elysior/strategy-call'
+const CAL_PROJECT = 'https://cal.com/elysior/project-consultation'
+const CAL_LINK_REL = 'noopener noreferrer'
+
+function calHref(kind) {
+  return kind === 'project' ? CAL_PROJECT : CAL_STRATEGY
+}
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqengele'
 const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61586996964376'
 const INSTAGRAM_URL = 'https://www.instagram.com/elysiorglobal/'
@@ -329,6 +336,27 @@ function App() {
   const t = copy.testimonios.items[carousel]
   const heroWords = copy.hero.titleWords
 
+  useEffect(() => {
+    if (!loaded) return undefined
+    const logCurrentHeroDesign = () => {
+      const hero = heroRef.current
+      if (!hero) return
+      const rectFor = (el) => {
+        if (!el) return null
+        const r = el.getBoundingClientRect()
+        return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height }
+      }
+      const badgeItems = [...hero.querySelectorAll('.hero__badges li')].map((el) => rectFor(el))
+      const orbs = [...hero.querySelectorAll('.hero-ambient-orbs__orb')].map((el) => rectFor(el))
+      // #region agent log
+      fetch('http://127.0.0.1:7594/ingest/29e1ab93-4a68-47e6-9a7c-1bf01deba8a8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'dfe161'},body:JSON.stringify({sessionId:'dfe161',runId:'post-fix',hypothesisId:'C1,C2,C3,C4',location:'src/App.jsx:332',message:'current hero design measurements',data:{viewport:{width:window.innerWidth,height:window.innerHeight,dpr:window.devicePixelRatio},hero:rectFor(hero),copyCol:rectFor(hero.querySelector('.hero__col--copy')),visualCol:rectFor(hero.querySelector('.hero__col--visual')),badges:rectFor(hero.querySelector('.hero__badges')),badgeItems,ambientOrbs:rectFor(hero.querySelector('.hero-ambient-orbs')),orbs,overflow:{documentScrollWidth:document.documentElement.scrollWidth,bodyScrollWidth:document.body.scrollWidth,hasHorizontalOverflow:document.documentElement.scrollWidth>window.innerWidth}},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    }
+    logCurrentHeroDesign()
+    window.addEventListener('resize', logCurrentHeroDesign)
+    return () => window.removeEventListener('resize', logCurrentHeroDesign)
+  }, [loaded])
+
   return (
     <div className={`landing${loaded ? ' landing--loaded' : ''}`}>
       {!loaded ? (
@@ -410,13 +438,22 @@ function App() {
               <a href="#precios" onClick={closeNav}>
                 {copy.nav.pricing}
               </a>
+              <a href="#agenda" onClick={closeNav}>
+                {copy.nav.booking}
+              </a>
               <a href="#faq" onClick={closeNav}>
                 {copy.nav.faq}
               </a>
               <a href="#lead" onClick={closeNav}>
                 {copy.nav.contact}
               </a>
-              <a className="nav__cta" href="#lead" onClick={closeNav}>
+              <a
+                className="nav__cta"
+                href={CAL_STRATEGY}
+                target="_blank"
+                rel={CAL_LINK_REL}
+                onClick={closeNav}
+              >
                 {copy.nav.ctaProposal}
               </a>
             </nav>
@@ -428,25 +465,7 @@ function App() {
 
       <main id="top">
         <section ref={heroRef} className="hero section hero--cinema hero--lux">
-          <div className="hero__spacebase" aria-hidden />
-          <div className="hero__gradient" aria-hidden />
-          <div className="hero__orb hero__orb--a" aria-hidden />
-          <div className="hero__orb hero__orb--b" aria-hidden />
-          <div className="hero__orb hero__orb--c" aria-hidden />
-          <div className="hero__atmosphere" aria-hidden>
-            <div className="hero__nebula hero__nebula--a" />
-            <div className="hero__nebula hero__nebula--b" />
-            <div className="hero__nebula hero__nebula--c" />
-          </div>
-          <div className="hero__aurora" aria-hidden>
-            <div className="hero__aurora-band hero__aurora-band--1" />
-            <div className="hero__aurora-band hero__aurora-band--2" />
-          </div>
-          <div className="hero__microgrid" aria-hidden />
-          <div className="hero__stars" aria-hidden />
-          <div className="hero__parallaxGlow" aria-hidden />
-          <HeroCosmos reducedMotion={reducedMotion} anchorRef={heroRef} />
-          <div className="hero__vignette" aria-hidden />
+          <HeroAtmosphere anchorRef={heroRef} reducedMotion={reducedMotion} />
 
           <div className="section__inner hero__grid">
             <div className="hero__col hero__col--copy">
@@ -472,75 +491,42 @@ function App() {
               </div>
               <div className="hero__cta">
                 <MagneticCta reducedMotion={reducedMotion}>
-                  <a className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target" href="#lead">
+                  <a
+                    className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target"
+                    href={CAL_STRATEGY}
+                    target="_blank"
+                    rel={CAL_LINK_REL}
+                  >
                     <span className="btn__shine">{copy.hero.ctaPrimary}</span>
                   </a>
                 </MagneticCta>
                 <MagneticCta reducedMotion={reducedMotion}>
-                  <a className="btn btn--ghost btn--heroGhost magnetic-cta__target" href="#lead">
+                  <a className="btn btn--ghost btn--heroGhost magnetic-cta__target" href="#servicios">
                     {copy.hero.ctaSecondary}
                   </a>
                 </MagneticCta>
               </div>
-              <ul className="hero__badges" aria-label={copy.hero.badgesAria}>
-                {copy.hero.badges.map((b) => (
-                  <li key={b}>{b}</li>
-                ))}
-              </ul>
             </div>
 
-            <div className="hero__col hero__col--visual">
-              <div className="hero-mockup hero-mockup--command glass lift-hover">
-                <div className="hero-mockup__chrome">
-                  <span className="hero-mockup__dot" />
-                  <span className="hero-mockup__dot" />
-                  <span className="hero-mockup__dot" />
-                  <span className="hero-mockup__url">{copy.hero.mockupUrl}</span>
-                </div>
-                <div className="hero-mockup__body">
-                  <p className="hero-mockup__label">{copy.hero.mockupLabel}</p>
-                  <h3 className="hero-mockup__title">{copy.hero.mockupTitle}</h3>
-                  <p className="hero-mockup__text">{copy.hero.mockupText}</p>
-                  <ul className="hero-mockup__statusRow" aria-label={copy.hero.mockupStatusAria}>
-                    {copy.hero.mockupStatusChips.map((label) => (
-                      <li key={label} className="hero-mockup__status">
-                        <span className="hero-mockup__status-dot" aria-hidden />
-                        <span className="hero-mockup__status-label">{label}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="hero-mockup__rows">
-                    <div className="hero-mockup__row">
-                      <span className="hero-mockup__tag">{copy.hero.mockupTags[0]}</span>
-                      <div className="hero-mockup__track">
-                        <div className="hero-mockup__fill hero-mockup__fill--1" />
-                      </div>
-                    </div>
-                    <div className="hero-mockup__row">
-                      <span className="hero-mockup__tag">{copy.hero.mockupTags[1]}</span>
-                      <div className="hero-mockup__track">
-                        <div className="hero-mockup__fill hero-mockup__fill--2" />
-                      </div>
-                    </div>
-                    <div className="hero-mockup__row">
-                      <span className="hero-mockup__tag">{copy.hero.mockupTags[2]}</span>
-                      <div className="hero-mockup__track">
-                        <div className="hero-mockup__fill hero-mockup__fill--3" />
-                      </div>
-                    </div>
-                    <div className="hero-mockup__row">
-                      <span className="hero-mockup__tag">{copy.hero.mockupTags[3]}</span>
-                      <div className="hero-mockup__track">
-                        <div className="hero-mockup__fill hero-mockup__fill--4 hero-mockup__fill--pulse" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="hero-mockup__footer">
-                    <span className="hero-mockup__pill">{copy.hero.mockupPill}</span>
-                    <span className="hero-mockup__stat">{copy.hero.mockupStat}</span>
-                  </div>
-                </div>
+            <div className="hero__col hero__col--visual" aria-hidden>
+              <div className="hero-ambient-orbs">
+                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--1" />
+                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--2" />
+                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--3" />
+                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--4" />
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section section--trust trust-bar" aria-label={copy.trustBar.aria}>
+          <div className="section__inner trust-bar__inner">
+            <div className="trust-bar__track">
+              {copy.trustBar.items.map((label) => (
+                <span key={label} className="trust-bar__item glass">
+                  {label}
+                </span>
+              ))}
             </div>
           </div>
         </section>
@@ -551,13 +537,7 @@ function App() {
               <p className="eyebrow">{copy.problem.eyebrow}</p>
               <h2 className="section__title section__title--lg">{copy.problem.title}</h2>
               <p className="section__lead">{copy.problem.lead}</p>
-              <p className="problem__note">
-                {copy.problem.noteHtml[0]}
-                <em>{copy.problem.noteHtml[1]}</em>
-                {copy.problem.noteHtml[2]}
-                <em>{copy.problem.noteHtml[3]}</em>
-                {copy.problem.noteHtml[4]}
-              </p>
+              <p className="problem__note">{copy.problem.brandLine}</p>
             </div>
             <div className="problem__panel glass lift-hover">
               <h3 className="problem__panel-title">{copy.problem.panelTitle}</h3>
@@ -670,7 +650,12 @@ function App() {
             <div className="portfolio-note glass lift-hover">
               <h3 className="portfolio-note__title">{copy.portfolio.noteTitle}</h3>
               <p className="portfolio-note__text">{copy.portfolio.noteBody}</p>
-              <a className="btn btn--primary btn--glow portfolio-note__cta" href="#lead">
+              <a
+                className="btn btn--primary btn--glow portfolio-note__cta"
+                href={CAL_PROJECT}
+                target="_blank"
+                rel={CAL_LINK_REL}
+              >
                 {copy.portfolio.noteCta}
               </a>
             </div>
@@ -719,8 +704,13 @@ function App() {
                       <li key={f}>{f}</li>
                     ))}
                   </ul>
-                  <a className="btn btn--block btn--primary btn--glow" href="#lead">
-                    {copy.precios.ctaPlan}
+                  <a
+                    className="btn btn--block btn--primary btn--glow"
+                    href={calHref(pkg.ctaKind)}
+                    target="_blank"
+                    rel={CAL_LINK_REL}
+                  >
+                    {pkg.ctaLabel}
                   </a>
                 </article>
               ))}
@@ -729,6 +719,52 @@ function App() {
               {copy.precios.footnote}
               <span className="pricing-footnote__en">{copy.precios.footnoteAccent}</span>
             </p>
+          </div>
+        </section>
+
+        <section id="agenda" className="section section--booking">
+          <div className="section__inner booking-section">
+            <header className="section__head section__head--center booking-section__head">
+              <h2 className="section__title">{copy.booking.title}</h2>
+              <p className="section__lead section__lead--center booking-section__subtitle">{copy.booking.lead}</p>
+            </header>
+            <div className="booking-options">
+              <article className="booking-card glass lift-hover">
+                <div className="booking-card__sheen" aria-hidden />
+                <p className="booking-card__duration">{copy.booking.strategy.duration}</p>
+                <h3 className="booking-card__title">{copy.booking.strategy.title}</h3>
+                <p className="booking-card__desc">{copy.booking.strategy.description}</p>
+                <a
+                  className="btn btn--primary btn--glow booking-card__cta"
+                  href={CAL_STRATEGY}
+                  target="_blank"
+                  rel={CAL_LINK_REL}
+                >
+                  {copy.booking.strategy.cta}
+                </a>
+              </article>
+              <article className="booking-card glass lift-hover booking-card--violet">
+                <div className="booking-card__sheen booking-card__sheen--violet" aria-hidden />
+                <p className="booking-card__duration">{copy.booking.project.duration}</p>
+                <h3 className="booking-card__title">{copy.booking.project.title}</h3>
+                <p className="booking-card__desc">{copy.booking.project.description}</p>
+                <a
+                  className="btn btn--primary btn--glow booking-card__cta"
+                  href={CAL_PROJECT}
+                  target="_blank"
+                  rel={CAL_LINK_REL}
+                >
+                  {copy.booking.project.cta}
+                </a>
+              </article>
+            </div>
+            <div className="booking-trust" role="list">
+              {copy.booking.trust.map((label) => (
+                <span key={label} className="booking-trust__pill" role="listitem">
+                  {label}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -744,6 +780,20 @@ function App() {
                     <li key={p}>{p}</li>
                   ))}
                 </ul>
+                <div className="lead-contact-card glass">
+                  <a className="lead-contact-card__email" href={`mailto:${CONTACT_EMAIL}`}>
+                    {CONTACT_EMAIL}
+                  </a>
+                  <p className="lead-contact-card__hint">{copy.lead.whatsappNote}</p>
+                  <a
+                    className="btn btn--ghost btn--sm lead-contact-card__wa"
+                    href={WHATSAPP_URL}
+                    target="_blank"
+                    rel={WHATSAPP_LINK_REL}
+                  >
+                    {copy.footer.whatsapp}
+                  </a>
+                </div>
                 <SocialLinks className="social-links--lead" />
               </div>
               <form
@@ -977,7 +1027,12 @@ function App() {
               <h2 className="cta-panel__title">{copy.cierre.title}</h2>
               <p className="cta-panel__text">{copy.cierre.text}</p>
               <div className="cta-panel__actions">
-                <a className="btn btn--primary btn--lg btn--glow" href="#lead">
+                <a
+                  className="btn btn--primary btn--lg btn--glow"
+                  href={CAL_STRATEGY}
+                  target="_blank"
+                  rel={CAL_LINK_REL}
+                >
                   {copy.cierre.ctaPrimary}
                 </a>
                 <a className="btn btn--ghost btn--lg" href={`mailto:${CONTACT_EMAIL}`}>
@@ -994,12 +1049,7 @@ function App() {
           <div className="footer__brand">
             <span className="footer__logo">ELYSIOR</span>
             <p className="footer__tagline">{copy.footer.tagline}</p>
-            <p className="footer__geo">
-              <span>{copy.footer.geoCr}</span>
-              <span className="footer__geo-sep">·</span>
-              <span>{copy.footer.geoUk}</span>
-            </p>
-            <p className="footer__geo-note subtle-en">{copy.footer.geoNote}</p>
+            <p className="footer__geo-line">{copy.footer.geoLine}</p>
             <div className="footer__social">
               <SocialLinks />
             </div>
@@ -1036,6 +1086,9 @@ function App() {
                 </li>
                 <li>
                   <a href="#precios">{copy.footer.nav.precios}</a>
+                </li>
+                <li>
+                  <a href="#agenda">{copy.footer.nav.agenda}</a>
                 </li>
                 <li>
                   <a href="#testimonios">{copy.footer.nav.testimonios}</a>
