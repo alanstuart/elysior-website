@@ -115,8 +115,17 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
       particles = initParticles(w, h, particleCount())
     }
 
+    let resizeDebounce = 0
+    const scheduleResize = () => {
+      window.clearTimeout(resizeDebounce)
+      resizeDebounce = window.setTimeout(() => {
+        resizeDebounce = 0
+        resize()
+      }, 140)
+    }
+
     const ro = new ResizeObserver(() => {
-      resize()
+      scheduleResize()
     })
     ro.observe(anchor)
     resize()
@@ -126,10 +135,10 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
       if (r.width < 1 || r.height < 1) return
       const nx = (e.clientX - r.left) / r.width - 0.5
       const ny = (e.clientY - r.top) / r.height - 0.5
-      targetTx = clamp(nx, -0.5, 0.5) * 14
-      targetTy = clamp(ny, -0.5, 0.5) * 11
-      anchor.style.setProperty('--hero-mx', String(nx * 1.65))
-      anchor.style.setProperty('--hero-my', String(ny * 1.52))
+      targetTx = clamp(nx, -0.5, 0.5) * 10
+      targetTy = clamp(ny, -0.5, 0.5) * 8
+      anchor.style.setProperty('--hero-mx', String(nx * 1.35))
+      anchor.style.setProperty('--hero-my', String(ny * 1.28))
     }
 
     const onPointerLeave = () => {
@@ -148,8 +157,8 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
         return
       }
 
-      tx += (targetTx - tx) * 0.038
-      ty += (targetTy - ty) * 0.038
+      tx += (targetTx - tx) * 0.03
+      ty += (targetTy - ty) * 0.03
       wrap.style.transform = `translate3d(${tx}px, ${ty}px, 0)`
 
       moveTick += 1
@@ -169,8 +178,8 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
     }
 
     const tickReduced = () => {
-      tx += (targetTx - tx) * 0.035
-      ty += (targetTy - ty) * 0.035
+      tx += (targetTx - tx) * 0.03
+      ty += (targetTy - ty) * 0.03
       wrap.style.transform = `translate3d(${tx}px, ${ty}px, 0)`
       for (let i = 0; i < particles.length; i += 1) {
         const p = particles[i]
@@ -197,6 +206,8 @@ export function HeroCosmos({ reducedMotion, anchorRef }) {
     document.addEventListener('visibilitychange', onVisibility)
 
     return () => {
+      window.clearTimeout(resizeDebounce)
+      resizeDebounce = 0
       cancelAnimationFrame(raf)
       raf = 0
       ro.disconnect()

@@ -459,7 +459,7 @@ function App() {
                 <div className="hero__headlineBeams" aria-hidden />
                 <h1 className="hero__title">
                   {heroWords.map((w, i) => (
-                    <span key={`${lang}-${w}-${i}`} className="hero__word" style={{ '--d': i }}>
+                    <span key={`hero-word-${i}`} className="hero__word" style={{ '--d': i }}>
                       {w}
                     </span>
                   ))}
