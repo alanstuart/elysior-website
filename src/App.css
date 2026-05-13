@@ -280,7 +280,7 @@
   height: 88px;
 }
 
-@media (max-width: 899px) {
+@media (max-width: 1199px) {
   .nav__shell {
     border-radius: 18px;
     padding: 10px 12px;
@@ -310,7 +310,7 @@
   display: none;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1200px) {
   .lang-switcher--desktop {
     display: block;
   }
@@ -490,7 +490,7 @@
   margin-left: auto;
 }
 
-@media (max-width: 899px) {
+@media (max-width: 1199px) {
   .nav__toggle {
     margin-left: auto;
   }
@@ -553,7 +553,7 @@
   }
 }
 
-@media (max-width: 899px) {
+@media (max-width: 1199px) {
   .nav__toggle {
     display: flex;
   }
@@ -661,8 +661,9 @@ main {
 
 .eyebrow {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 4px 10px;
   margin: 0;
   font-size: 10px;
   font-weight: 600;
@@ -1405,11 +1406,14 @@ main {
   letter-spacing: var(--tracking-brand);
   line-height: 1;
   text-transform: uppercase;
+  filter: drop-shadow(0 12px 48px rgba(0, 0, 0, 0.35));
+}
+
+.hero__brand .text-reveal__inner {
   background: linear-gradient(180deg, #fff 0%, var(--gold-bright) 45%, var(--gold) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 12px 48px rgba(0, 0, 0, 0.35));
 }
 
 .hero__eyebrow {
