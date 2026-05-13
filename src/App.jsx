@@ -10,7 +10,14 @@ import { HeroAtmosphere } from './HeroAtmosphere.jsx'
 const WHATSAPP_PREFILL = 'Hola, quiero más información sobre sus servicios.'
 const WHATSAPP_URL = `https://wa.me/50660256080?text=${encodeURIComponent(WHATSAPP_PREFILL)}`
 const WHATSAPP_LINK_REL = 'noopener noreferrer'
-const CONTACT_EMAIL = 'hola@elysior.studio'
+const CONTACT_EMAIL = 'contact@elysiorglobal.com'
+const CAL_STRATEGY = 'https://cal.com/elysior/strategy-call'
+const CAL_PROJECT = 'https://cal.com/elysior/project-consultation'
+const CAL_LINK_REL = 'noopener noreferrer'
+
+function calHref(kind) {
+  return kind === 'project' ? CAL_PROJECT : CAL_STRATEGY
+}
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqengele'
 const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61586996964376'
 const INSTAGRAM_URL = 'https://www.instagram.com/elysiorglobal/'
@@ -431,13 +438,22 @@ function App() {
               <a href="#precios" onClick={closeNav}>
                 {copy.nav.pricing}
               </a>
+              <a href="#agenda" onClick={closeNav}>
+                {copy.nav.booking}
+              </a>
               <a href="#faq" onClick={closeNav}>
                 {copy.nav.faq}
               </a>
               <a href="#lead" onClick={closeNav}>
                 {copy.nav.contact}
               </a>
-              <a className="nav__cta" href="#lead" onClick={closeNav}>
+              <a
+                className="nav__cta"
+                href={CAL_STRATEGY}
+                target="_blank"
+                rel={CAL_LINK_REL}
+                onClick={closeNav}
+              >
                 {copy.nav.ctaProposal}
               </a>
             </nav>
@@ -475,21 +491,21 @@ function App() {
               </div>
               <div className="hero__cta">
                 <MagneticCta reducedMotion={reducedMotion}>
-                  <a className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target" href="#lead">
+                  <a
+                    className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target"
+                    href={CAL_STRATEGY}
+                    target="_blank"
+                    rel={CAL_LINK_REL}
+                  >
                     <span className="btn__shine">{copy.hero.ctaPrimary}</span>
                   </a>
                 </MagneticCta>
                 <MagneticCta reducedMotion={reducedMotion}>
-                  <a className="btn btn--ghost btn--heroGhost magnetic-cta__target" href="#lead">
+                  <a className="btn btn--ghost btn--heroGhost magnetic-cta__target" href="#servicios">
                     {copy.hero.ctaSecondary}
                   </a>
                 </MagneticCta>
               </div>
-              <ul className="hero__badges" aria-label={copy.hero.badgesAria}>
-                {copy.hero.badges.map((b) => (
-                  <li key={b}>{b}</li>
-                ))}
-              </ul>
             </div>
 
             <div className="hero__col hero__col--visual" aria-hidden>
@@ -503,19 +519,25 @@ function App() {
           </div>
         </section>
 
+        <section className="section section--trust trust-bar" aria-label={copy.trustBar.aria}>
+          <div className="section__inner trust-bar__inner">
+            <div className="trust-bar__track">
+              {copy.trustBar.items.map((label) => (
+                <span key={label} className="trust-bar__item glass">
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="problema" className="section section--problem">
           <div className="section__inner problem">
             <div className="problem__copy">
               <p className="eyebrow">{copy.problem.eyebrow}</p>
               <h2 className="section__title section__title--lg">{copy.problem.title}</h2>
               <p className="section__lead">{copy.problem.lead}</p>
-              <p className="problem__note">
-                {copy.problem.noteHtml[0]}
-                <em>{copy.problem.noteHtml[1]}</em>
-                {copy.problem.noteHtml[2]}
-                <em>{copy.problem.noteHtml[3]}</em>
-                {copy.problem.noteHtml[4]}
-              </p>
+              <p className="problem__note">{copy.problem.brandLine}</p>
             </div>
             <div className="problem__panel glass lift-hover">
               <h3 className="problem__panel-title">{copy.problem.panelTitle}</h3>
@@ -628,7 +650,12 @@ function App() {
             <div className="portfolio-note glass lift-hover">
               <h3 className="portfolio-note__title">{copy.portfolio.noteTitle}</h3>
               <p className="portfolio-note__text">{copy.portfolio.noteBody}</p>
-              <a className="btn btn--primary btn--glow portfolio-note__cta" href="#lead">
+              <a
+                className="btn btn--primary btn--glow portfolio-note__cta"
+                href={CAL_PROJECT}
+                target="_blank"
+                rel={CAL_LINK_REL}
+              >
                 {copy.portfolio.noteCta}
               </a>
             </div>
@@ -677,8 +704,13 @@ function App() {
                       <li key={f}>{f}</li>
                     ))}
                   </ul>
-                  <a className="btn btn--block btn--primary btn--glow" href="#lead">
-                    {copy.precios.ctaPlan}
+                  <a
+                    className="btn btn--block btn--primary btn--glow"
+                    href={calHref(pkg.ctaKind)}
+                    target="_blank"
+                    rel={CAL_LINK_REL}
+                  >
+                    {pkg.ctaLabel}
                   </a>
                 </article>
               ))}
@@ -687,6 +719,52 @@ function App() {
               {copy.precios.footnote}
               <span className="pricing-footnote__en">{copy.precios.footnoteAccent}</span>
             </p>
+          </div>
+        </section>
+
+        <section id="agenda" className="section section--booking">
+          <div className="section__inner booking-section">
+            <header className="section__head section__head--center booking-section__head">
+              <h2 className="section__title">{copy.booking.title}</h2>
+              <p className="section__lead section__lead--center booking-section__subtitle">{copy.booking.lead}</p>
+            </header>
+            <div className="booking-options">
+              <article className="booking-card glass lift-hover">
+                <div className="booking-card__sheen" aria-hidden />
+                <p className="booking-card__duration">{copy.booking.strategy.duration}</p>
+                <h3 className="booking-card__title">{copy.booking.strategy.title}</h3>
+                <p className="booking-card__desc">{copy.booking.strategy.description}</p>
+                <a
+                  className="btn btn--primary btn--glow booking-card__cta"
+                  href={CAL_STRATEGY}
+                  target="_blank"
+                  rel={CAL_LINK_REL}
+                >
+                  {copy.booking.strategy.cta}
+                </a>
+              </article>
+              <article className="booking-card glass lift-hover booking-card--violet">
+                <div className="booking-card__sheen booking-card__sheen--violet" aria-hidden />
+                <p className="booking-card__duration">{copy.booking.project.duration}</p>
+                <h3 className="booking-card__title">{copy.booking.project.title}</h3>
+                <p className="booking-card__desc">{copy.booking.project.description}</p>
+                <a
+                  className="btn btn--primary btn--glow booking-card__cta"
+                  href={CAL_PROJECT}
+                  target="_blank"
+                  rel={CAL_LINK_REL}
+                >
+                  {copy.booking.project.cta}
+                </a>
+              </article>
+            </div>
+            <div className="booking-trust" role="list">
+              {copy.booking.trust.map((label) => (
+                <span key={label} className="booking-trust__pill" role="listitem">
+                  {label}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -702,6 +780,20 @@ function App() {
                     <li key={p}>{p}</li>
                   ))}
                 </ul>
+                <div className="lead-contact-card glass">
+                  <a className="lead-contact-card__email" href={`mailto:${CONTACT_EMAIL}`}>
+                    {CONTACT_EMAIL}
+                  </a>
+                  <p className="lead-contact-card__hint">{copy.lead.whatsappNote}</p>
+                  <a
+                    className="btn btn--ghost btn--sm lead-contact-card__wa"
+                    href={WHATSAPP_URL}
+                    target="_blank"
+                    rel={WHATSAPP_LINK_REL}
+                  >
+                    {copy.footer.whatsapp}
+                  </a>
+                </div>
                 <SocialLinks className="social-links--lead" />
               </div>
               <form
@@ -935,7 +1027,12 @@ function App() {
               <h2 className="cta-panel__title">{copy.cierre.title}</h2>
               <p className="cta-panel__text">{copy.cierre.text}</p>
               <div className="cta-panel__actions">
-                <a className="btn btn--primary btn--lg btn--glow" href="#lead">
+                <a
+                  className="btn btn--primary btn--lg btn--glow"
+                  href={CAL_STRATEGY}
+                  target="_blank"
+                  rel={CAL_LINK_REL}
+                >
                   {copy.cierre.ctaPrimary}
                 </a>
                 <a className="btn btn--ghost btn--lg" href={`mailto:${CONTACT_EMAIL}`}>
@@ -952,12 +1049,7 @@ function App() {
           <div className="footer__brand">
             <span className="footer__logo">ELYSIOR</span>
             <p className="footer__tagline">{copy.footer.tagline}</p>
-            <p className="footer__geo">
-              <span>{copy.footer.geoCr}</span>
-              <span className="footer__geo-sep">·</span>
-              <span>{copy.footer.geoUk}</span>
-            </p>
-            <p className="footer__geo-note subtle-en">{copy.footer.geoNote}</p>
+            <p className="footer__geo-line">{copy.footer.geoLine}</p>
             <div className="footer__social">
               <SocialLinks />
             </div>
@@ -994,6 +1086,9 @@ function App() {
                 </li>
                 <li>
                   <a href="#precios">{copy.footer.nav.precios}</a>
+                </li>
+                <li>
+                  <a href="#agenda">{copy.footer.nav.agenda}</a>
                 </li>
                 <li>
                   <a href="#testimonios">{copy.footer.nav.testimonios}</a>

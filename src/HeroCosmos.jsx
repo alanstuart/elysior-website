@@ -78,6 +78,7 @@ function paintParticles(ctx, particles, w, h, lighter) {
 
 /**
  * Dense drifting starfield dust + macro motes; pointer parallax on canvas wrap.
+ * @param {{ reducedMotion: boolean, anchorRef: import('react').RefObject<HTMLElement | null> }} props
  */
 export function HeroCosmos({ reducedMotion, anchorRef }) {
   const canvasRef = useRef(null)
