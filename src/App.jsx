@@ -444,60 +444,34 @@ function App() {
 
       <main id="top">
         <section ref={heroRef} className="hero section hero--cinema hero--lux">
-          <HeroAtmosphere anchorRef={heroRef} reducedMotion={reducedMotion} />
+          <HeroAtmosphere reducedMotion={reducedMotion} />
 
-          <div className="section__inner hero__grid">
-            <div className="hero__col hero__col--copy">
-              <p className="hero__brand text-reveal">
-                <span className="text-reveal__inner">ELYSIOR</span>
-              </p>
-              <p className="eyebrow hero__eyebrow">
-                {copy.hero.eyebrow}{' '}
-                <span className="eyebrow__en">{copy.hero.eyebrowAccent}</span>
-              </p>
-              <div className="hero__headlineWrap">
-                <div className="hero__headlineBeams" aria-hidden />
-                <h1 className="hero__title">
-                  {heroWords.map((w, i) => (
-                    <span
-                      key={`hero-word-${i}`}
-                      className="hero__word"
-                      style={{ animationDelay: `${0.08 + i * 0.06}s` }}
-                    >
-                      {w}
-                    </span>
-                  ))}
-                </h1>
-              </div>
-              <div className="hero__subBlock">
-                <p className="hero__sub">{copy.hero.sub}</p>
-              </div>
-              <div className="hero__cta">
-                <MagneticCta reducedMotion={reducedMotion}>
-                  <a
-                    className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target"
-                    href={CAL_STRATEGY}
-                    target="_blank"
-                    rel={CAL_LINK_REL}
-                  >
-                    <span className="btn__shine">{copy.hero.ctaPrimary}</span>
-                  </a>
-                </MagneticCta>
-                <MagneticCta reducedMotion={reducedMotion}>
-                  <a className="btn btn--ghost btn--heroGhost magnetic-cta__target" href="#servicios">
-                    {copy.hero.ctaSecondary}
-                  </a>
-                </MagneticCta>
-              </div>
-            </div>
-
-            <div className="hero__col hero__col--visual" aria-hidden>
-              <div className="hero-ambient-orbs">
-                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--1" />
-                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--2" />
-                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--3" />
-                <span className="hero-ambient-orbs__orb hero-ambient-orbs__orb--4" />
-              </div>
+          <div className="section__inner hero__inner">
+            <p className="eyebrow hero__eyebrow">
+              {copy.hero.eyebrow}{' '}
+              <span className="eyebrow__en">{copy.hero.eyebrowAccent}</span>
+            </p>
+            <h1 className="hero__title">{heroWords.join(' ')}</h1>
+            <p className="hero__sub">{copy.hero.sub}</p>
+            <div className="hero__cta">
+              <MagneticCta reducedMotion={reducedMotion}>
+                <a
+                  className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target"
+                  href={CAL_STRATEGY}
+                  target="_blank"
+                  rel={CAL_LINK_REL}
+                >
+                  <span className="btn__shine">{copy.hero.ctaPrimary}</span>
+                </a>
+              </MagneticCta>
+              <MagneticCta reducedMotion={reducedMotion}>
+                <a
+                  className="btn btn--ghost btn--heroGhost magnetic-cta__target"
+                  href="#lead"
+                >
+                  {copy.hero.ctaSecondary}
+                </a>
+              </MagneticCta>
             </div>
           </div>
         </section>

@@ -230,10 +230,10 @@ function buildCopy(lang) {
         fr: 'Réserver un diagnostic gratuit',
       }),
       ctaSecondary: L({
-        es: 'Ver Servicios',
-        en: 'View services',
-        pt: 'Ver serviços',
-        fr: 'Voir les services',
+        es: 'Solicitar Propuesta',
+        en: 'Request Proposal',
+        pt: 'Solicitar Proposta',
+        fr: 'Demander une proposition',
       }),
       badgesAria: L({
         es: 'Señales de confianza',
