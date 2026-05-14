@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://cal.com" crossorigin />
     <link rel="preconnect" href="https://formspree.io" crossorigin />
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="dns-prefetch" href="https://wa.me" />
     <link rel="dns-prefetch" href="https://www.facebook.com" />
     <link rel="dns-prefetch" href="https://www.instagram.com" />
@@ -18,22 +19,35 @@
       name="description"
       content="ELYSIOR ayuda a empresas en Costa Rica, Reino Unido y mercados globales a crecer con websites premium, campañas de Google Ads y sistemas inteligentes de captación de clientes."
     />
+    <meta
+      name="keywords"
+      content="ELYSIOR, websites premium, Google Ads, captación de leads, automatización de marketing, agencia digital, Costa Rica, Reino Unido, landing pages, sistemas de leads con IA"
+    />
     <meta name="author" content="ELYSIOR" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
     <link rel="canonical" href="https://elysiorglobal.com/" />
+    <link rel="alternate" hreflang="es" href="https://elysiorglobal.com/" />
+    <link rel="alternate" hreflang="en" href="https://elysiorglobal.com/" />
+    <link rel="alternate" hreflang="pt" href="https://elysiorglobal.com/" />
+    <link rel="alternate" hreflang="fr" href="https://elysiorglobal.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://elysiorglobal.com/" />
 
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="ELYSIOR" />
-    <meta property="og:locale" content="es_ES" />
-    <meta property="og:locale:alternate" content="en_US" />
-    <meta property="og:url" content="https://elysiorglobal.com/" />
-    <meta property="og:title" content="ELYSIOR | Websites Premium, Google Ads & AI Lead Systems" />
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp link previews) -->
+    <meta property="og:title" content="ELYSIOR | Websites Premium, Google Ads &amp; AI Lead Systems" />
     <meta
       property="og:description"
       content="ELYSIOR ayuda a empresas en Costa Rica, Reino Unido y mercados globales a crecer con websites premium, campañas de Google Ads y sistemas inteligentes de captación de clientes."
     />
     <meta property="og:image" content="https://elysiorglobal.com/og-image.jpg" />
+    <meta property="og:url" content="https://elysiorglobal.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ELYSIOR" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale:alternate" content="pt_BR" />
+    <meta property="og:locale:alternate" content="fr_FR" />
     <meta property="og:image:secure_url" content="https://elysiorglobal.com/og-image.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
@@ -43,8 +57,9 @@
       content="ELYSIOR — Websites premium, Google Ads y sistemas inteligentes de captación de clientes"
     />
 
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="ELYSIOR | Websites Premium, Google Ads & AI Lead Systems" />
+    <meta name="twitter:title" content="ELYSIOR | Websites Premium, Google Ads &amp; AI Lead Systems" />
     <meta
       name="twitter:description"
       content="ELYSIOR ayuda a empresas en Costa Rica, Reino Unido y mercados globales a crecer con websites premium, campañas de Google Ads y sistemas inteligentes de captación de clientes."
@@ -60,60 +75,24 @@
         "@context": "https://schema.org",
         "@type": "ProfessionalService",
         "name": "ELYSIOR",
-        "alternateName": "ELYSIOR Global",
-        "url": "https://elysiorglobal.com/",
-        "logo": "https://elysiorglobal.com/favicon.svg",
-        "image": "https://elysiorglobal.com/og-image.jpg",
         "description": "ELYSIOR ayuda a empresas en Costa Rica, Reino Unido y mercados globales a crecer con websites premium, campañas de Google Ads y sistemas inteligentes de captación de clientes.",
+        "url": "https://elysiorglobal.com/",
         "email": "contact@elysiorglobal.com",
-        "areaServed": [
-          { "@type": "Country", "name": "Costa Rica" },
-          { "@type": "Country", "name": "United Kingdom" },
-          { "@type": "Place", "name": "Global" }
-        ],
-        "knowsLanguage": ["es", "en", "pt", "fr"],
+        "image": "https://elysiorglobal.com/og-image.jpg",
+        "areaServed": ["Costa Rica", "United Kingdom", "Global"],
         "makesOffer": [
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Premium Websites",
-              "description": "Websites premium con arquitectura de conversión, rendimiento y diseño de nivel internacional."
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Google Ads",
-              "description": "Campañas de Google Ads estructuradas con landing pages y medición orientadas a conversión."
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "AI Lead Systems",
-              "description": "Sistemas inteligentes de captación de leads con IA, formularios y flujos automatizados."
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Business Automation",
-              "description": "Automatización de procesos entre formularios, CRM, seguimiento y reservas."
-            }
-          }
-        ],
-        "sameAs": [
-          "https://www.facebook.com/elysiorglobal",
-          "https://www.instagram.com/elysiorglobal"
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Premium Websites" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "AI Lead Systems" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Business Automation" } }
         ]
       }
     </script>
   </head>
   <body>
+    <script>
+      window.dataLayer = window.dataLayer || []
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

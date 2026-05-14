@@ -6,6 +6,11 @@ import './App.css'
  */
 import { getCopy, LANG_CODES, LANG_STORAGE_KEY } from './elysiorTranslations.js'
 import { HeroAtmosphere } from './HeroAtmosphere.jsx'
+import {
+  attachCtaClickTracking,
+  initGoogleAnalytics,
+  trackLeadFormSuccess,
+} from './analytics.js'
 
 const WHATSAPP_PREFILL = 'Hola, quiero más información sobre sus servicios.'
 const WHATSAPP_URL = `https://wa.me/50660256080?text=${encodeURIComponent(WHATSAPP_PREFILL)}`
@@ -20,9 +25,9 @@ function calHref(kind) {
 }
 const HERO_MOTION_VIDEO_SRC =
   'https://res.cloudinary.com/dxkathdnc/video/upload/q_auto:eco,f_auto,w_1200/v1778717928/hero-motion_uzxyws.mp4'
-/** Lighter transcode for hero background autoplay on narrow viewports. */
+/** Mobile hero background: 1080-wide transcode for sharper retina cover (still q_auto:eco). */
 const HERO_MOTION_VIDEO_SRC_MOBILE =
-  'https://res.cloudinary.com/dxkathdnc/video/upload/q_auto:eco,f_auto,w_720/v1778717928/hero-motion_uzxyws.mp4'
+  'https://res.cloudinary.com/dxkathdnc/video/upload/q_auto:eco,f_auto,w_1080/v1778717928/hero-motion_uzxyws.mp4'
 /** First-frame still from the same Cloudinary asset (poster / reduced motion). */
 const HERO_MOTION_POSTER_SRC =
   'https://res.cloudinary.com/dxkathdnc/video/upload/so_0,w_900,h_506,c_fill,q_auto:eco,f_auto/v1778717928/hero-motion_uzxyws.jpg'
@@ -275,6 +280,11 @@ function App() {
   }, [lang, copy.htmlLang])
 
   useEffect(() => {
+    initGoogleAnalytics()
+    return attachCtaClickTracking()
+  }, [])
+
+  useEffect(() => {
     if (reducedMotion) return undefined
     const t = window.setTimeout(() => setLoaded(true), 900)
     return () => window.clearTimeout(t)
@@ -356,6 +366,17 @@ function App() {
     e.preventDefault()
     if (formStatus === 'loading') return
     setFormStatus('loading')
+    const pickLabel = (rows, val) => rows.find((r) => r.value === val)?.label ?? val
+    const utm = {}
+    try {
+      const sp = new URLSearchParams(window.location.search)
+      for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']) {
+        const v = sp.get(key)
+        if (v) utm[key] = v
+      }
+    } catch {
+      /* ignore */
+    }
     try {
       const res = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
@@ -373,6 +394,22 @@ function App() {
           _replyto: form.email.trim(),
           _subject: `ELYSIOR lead — ${form.empresa.trim() || '—'}`,
           _gotcha: formGotchaRef.current?.value ?? '',
+          lead_full_name: form.nombre.trim(),
+          lead_company: form.empresa.trim(),
+          lead_email: form.email.trim(),
+          lead_business_type: form.tipoNegocio,
+          lead_business_type_label: pickLabel(copy.lead.businessType, form.tipoNegocio),
+          lead_budget_tier: form.presupuesto,
+          lead_budget_label: pickLabel(copy.lead.budget, form.presupuesto),
+          lead_goal: form.objetivo,
+          lead_goal_label: pickLabel(copy.lead.objective, form.objetivo),
+          marketing_site_language: lang,
+          marketing_page_url: typeof window !== 'undefined' ? window.location.href : '',
+          marketing_referrer: typeof document !== 'undefined' ? document.referrer || '' : '',
+          marketing_form_name: 'elysior_lead_v1',
+          marketing_zap_source: 'elysior_website',
+          submitted_at: new Date().toISOString(),
+          ...utm,
         }),
       })
       const data = await res.json().catch(() => ({}))
@@ -380,6 +417,12 @@ function App() {
       setForm({ ...EMPTY_LEAD_FORM })
       if (formGotchaRef.current) formGotchaRef.current.value = ''
       setFormStatus('success')
+      trackLeadFormSuccess({
+        marketing_site_language: lang,
+        lead_business_type: form.tipoNegocio,
+        lead_budget_tier: form.presupuesto,
+        lead_goal: form.objetivo,
+      })
     } catch {
       setFormStatus('error')
     }
