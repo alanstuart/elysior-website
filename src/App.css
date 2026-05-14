@@ -735,22 +735,42 @@ main {
     max-width: none;
     object-fit: cover;
     object-position: 78% 42%;
-    opacity: 0.16;
+    opacity: 0.18;
     transform: scale(1.03);
+    filter: saturate(1.06);
   }
 
   .hero__motionPosterScrim {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(
-      102deg,
-      rgba(1, 2, 10, 0.92) 0%,
-      rgba(2, 6, 18, 0.62) 42%,
-      rgba(2, 8, 22, 0.42) 62%,
-      rgba(6, 12, 32, 0.55) 100%
-    );
+    background:
+      radial-gradient(ellipse 72% 58% at 86% 32%, rgba(72, 96, 168, 0.14) 0%, transparent 55%),
+      linear-gradient(
+        102deg,
+        rgba(1, 2, 10, 0.9) 0%,
+        rgba(2, 6, 18, 0.58) 40%,
+        rgba(2, 8, 22, 0.38) 62%,
+        rgba(6, 12, 32, 0.52) 100%
+      );
   }
+}
+
+/* Static blobs + poster: slightly stronger scrim so copy stays crisp without motion */
+.hero-atmosphere--reduced ~ .hero__motionPoster .hero__motionPosterScrim {
+  background:
+    radial-gradient(ellipse 68% 52% at 84% 30%, rgba(56, 78, 140, 0.1) 0%, transparent 52%),
+    linear-gradient(
+      102deg,
+      rgba(1, 2, 10, 0.94) 0%,
+      rgba(2, 6, 18, 0.68) 44%,
+      rgba(2, 8, 22, 0.48) 64%,
+      rgba(6, 12, 32, 0.58) 100%
+    );
+}
+
+.hero-atmosphere--reduced ~ .hero__motionPoster .hero__motionPosterImg {
+  opacity: 0.15;
 }
 
 @media (min-width: 769px) {
@@ -780,6 +800,16 @@ main {
     radial-gradient(ellipse 88% 52% at 18% 22%, rgba(56, 88, 168, 0.09) 0%, transparent 58%),
     radial-gradient(ellipse 72% 48% at 88% 28%, rgba(190, 165, 118, 0.045) 0%, transparent 52%),
     radial-gradient(ellipse 80% 44% at 50% 100%, rgba(120, 95, 168, 0.055) 0%, transparent 50%);
+}
+
+@media (max-width: 768px) {
+  .hero-atmosphere .hero__gradient {
+    opacity: 0.98;
+    background:
+      radial-gradient(ellipse 90% 54% at 16% 24%, rgba(56, 92, 178, 0.11) 0%, transparent 58%),
+      radial-gradient(ellipse 74% 50% at 90% 26%, rgba(190, 168, 125, 0.055) 0%, transparent 52%),
+      radial-gradient(ellipse 82% 46% at 52% 100%, rgba(128, 100, 178, 0.065) 0%, transparent 50%);
+  }
 }
 
 /* Ultra-soft floating gas / nebula (living atmosphere, not interface) */
@@ -3643,8 +3673,8 @@ main {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 480px) and (prefers-reduced-motion: no-preference) {
   .hero__gasBlob {
-    animation: none;
+    animation-duration: 220s, 280s;
   }
 }
