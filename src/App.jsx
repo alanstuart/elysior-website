@@ -18,6 +18,12 @@ const CAL_LINK_REL = 'noopener noreferrer'
 function calHref(kind) {
   return kind === 'project' ? CAL_PROJECT : CAL_STRATEGY
 }
+const HERO_MOTION_VIDEO_SRC =
+  'https://res.cloudinary.com/dxkathdnc/video/upload/q_auto:eco,f_auto,w_1200/v1778717928/hero-motion_uzxyws.mp4'
+/** First-frame still from the same Cloudinary asset — no video download on mobile. */
+const HERO_MOTION_POSTER_SRC =
+  'https://res.cloudinary.com/dxkathdnc/video/upload/so_0,w_900,h_506,c_fill,q_auto:eco,f_auto/v1778717928/hero-motion_uzxyws.jpg'
+
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqengele'
 const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61586996964376'
 const INSTAGRAM_URL = 'https://www.instagram.com/elysiorglobal/'
@@ -79,6 +85,38 @@ function usePrefersReducedMotion() {
     return () => mq.removeEventListener('change', fn)
   }, [])
   return reduced
+}
+
+/** Desktop-only: autoplay video column (saves mobile bandwidth + decode). */
+function useHeroMotionVideoEnabled(reducedMotion) {
+  const [enabled, setEnabled] = useState(() => {
+    if (typeof window === 'undefined') return false
+    if (reducedMotion) return false
+    return window.matchMedia('(min-width: 769px)').matches
+  })
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 769px)')
+    const sync = () => setEnabled(mq.matches && !reducedMotion)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [reducedMotion])
+  return enabled
+}
+
+/** Mobile / narrow: static poster layer (no video element, no autoplay). */
+function useHeroMotionPosterMobile() {
+  const [active, setActive] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const sync = () => setActive(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+  return active
 }
 
 const MAG_MAX_PX = 10
@@ -185,6 +223,8 @@ function LanguageSwitcher({ lang, setLang, copy, className = '', onPick }) {
 
 function App() {
   const reducedMotion = usePrefersReducedMotion()
+  const heroMotionVideo = useHeroMotionVideoEnabled(reducedMotion)
+  const heroMotionPosterMobile = useHeroMotionPosterMobile()
   const [lang, setLang] = useState(() => {
     if (typeof window === 'undefined') return 'es'
     const s = localStorage.getItem(LANG_STORAGE_KEY)
@@ -457,33 +497,70 @@ function App() {
         <section ref={heroRef} className="hero section hero--cinema hero--lux">
           <HeroAtmosphere reducedMotion={reducedMotion} />
 
-          <div className="section__inner hero__inner">
-            <p className="eyebrow hero__eyebrow">
-              {copy.hero.eyebrow}{' '}
-              <span className="eyebrow__en">{copy.hero.eyebrowAccent}</span>
-            </p>
-            <h1 className="hero__title">{heroWords.join(' ')}</h1>
-            <p className="hero__sub">{copy.hero.sub}</p>
-            <div className="hero__cta">
-              <MagneticCta reducedMotion={reducedMotion}>
-                <a
-                  className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target"
-                  href={CAL_STRATEGY}
-                  target="_blank"
-                  rel={CAL_LINK_REL}
-                >
-                  <span className="btn__shine">{copy.hero.ctaPrimary}</span>
-                </a>
-              </MagneticCta>
-              <MagneticCta reducedMotion={reducedMotion}>
-                <a
-                  className="btn btn--ghost btn--heroGhost magnetic-cta__target"
-                  href="#lead"
-                >
-                  {copy.hero.ctaSecondary}
-                </a>
-              </MagneticCta>
+          {heroMotionPosterMobile ? (
+            <div className="hero__motionPoster" aria-hidden>
+              <img
+                className="hero__motionPosterImg"
+                src={HERO_MOTION_POSTER_SRC}
+                alt=""
+                width={900}
+                height={506}
+                decoding="async"
+                fetchPriority="low"
+              />
+              <div className="hero__motionPosterScrim" />
             </div>
+          ) : null}
+
+          <div className="section__inner hero__shell">
+            <div className="hero__inner">
+              <p className="eyebrow hero__eyebrow">
+                {copy.hero.eyebrow}{' '}
+                <span className="eyebrow__en">{copy.hero.eyebrowAccent}</span>
+              </p>
+              <h1 className="hero__title">{heroWords.join(' ')}</h1>
+              <p className="hero__sub">{copy.hero.sub}</p>
+              <div className="hero__cta">
+                <MagneticCta reducedMotion={reducedMotion}>
+                  <a
+                    className="btn btn--primary btn--glow btn--heroPrimary magnetic-cta__target"
+                    href={CAL_STRATEGY}
+                    target="_blank"
+                    rel={CAL_LINK_REL}
+                  >
+                    <span className="btn__shine">{copy.hero.ctaPrimary}</span>
+                  </a>
+                </MagneticCta>
+                <MagneticCta reducedMotion={reducedMotion}>
+                  <a
+                    className="btn btn--ghost btn--heroGhost magnetic-cta__target"
+                    href="#lead"
+                  >
+                    {copy.hero.ctaSecondary}
+                  </a>
+                </MagneticCta>
+              </div>
+            </div>
+
+            {heroMotionVideo ? (
+              <div className="hero__motion" aria-hidden>
+                <div className="hero__motionFrame">
+                  <video
+                    className="hero__motionVideo"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    disablePictureInPicture
+                    controls={false}
+                  >
+                    <source src={HERO_MOTION_VIDEO_SRC} type="video/mp4" />
+                  </video>
+                  <div className="hero__motionOverlay" />
+                </div>
+              </div>
+            ) : null}
           </div>
         </section>
 

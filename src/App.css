@@ -712,6 +712,53 @@ main {
   }
 }
 
+/* Mobile: Cloudinary still frame behind copy — no video, no autoplay, zero layout impact */
+.hero__motionPoster {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hero__motionPoster {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .hero__motionPosterImg {
+    position: absolute;
+    inset: -8% -12% -6%;
+    width: 124%;
+    height: 120%;
+    max-width: none;
+    object-fit: cover;
+    object-position: 78% 42%;
+    opacity: 0.16;
+    transform: scale(1.03);
+  }
+
+  .hero__motionPosterScrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      102deg,
+      rgba(1, 2, 10, 0.92) 0%,
+      rgba(2, 6, 18, 0.62) 42%,
+      rgba(2, 8, 22, 0.42) 62%,
+      rgba(6, 12, 32, 0.55) 100%
+    );
+  }
+}
+
+@media (min-width: 769px) {
+  .hero__motionPoster {
+    display: none !important;
+  }
+}
+
 .hero__spacebase {
   position: absolute;
   inset: 0;
@@ -834,6 +881,110 @@ main {
   animation: none !important;
 }
 
+.hero__shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 880px;
+  margin-inline: auto;
+  min-width: 0;
+}
+
+@media (min-width: 769px) {
+  .hero__shell {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, min(44vw, 460px));
+  }
+
+  .hero__inner {
+    margin-inline: 0;
+    max-width: min(680px, 100%);
+    justify-self: start;
+  }
+
+  .hero__motion {
+    justify-self: end;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .hero__motionFrame {
+    margin-inline: 0 0;
+    margin-left: auto;
+  }
+}
+
+.hero__motion {
+  position: relative;
+  pointer-events: none;
+}
+
+.hero__motionFrame {
+  position: relative;
+  width: min(100%, 440px);
+  margin-inline: auto;
+  aspect-ratio: 16 / 9;
+  max-height: min(420px, 52vh);
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(130, 150, 230, 0.22);
+  background:
+    linear-gradient(165deg, rgba(18, 28, 58, 0.35) 0%, rgba(8, 12, 28, 0.2) 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 24px 56px rgba(0, 0, 0, 0.35),
+    0 0 48px rgba(77, 124, 239, 0.18),
+    0 0 80px rgba(120, 95, 200, 0.12);
+}
+
+.hero__motionVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.62;
+  pointer-events: none;
+  filter: saturate(1.08);
+}
+
+.hero__motionVideo::-webkit-media-controls {
+  display: none !important;
+}
+
+.hero__motionVideo::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+
+.hero__motionOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 88% 88% at 50% 48%,
+      rgba(2, 6, 18, 0) 40%,
+      rgba(4, 10, 28, 0.18) 72%,
+      rgba(6, 12, 32, 0.38) 100%
+    ),
+    linear-gradient(
+      198deg,
+      rgba(72, 98, 175, 0.14) 0%,
+      transparent 48%,
+      rgba(120, 95, 168, 0.1) 100%
+    );
+}
+
 .hero__vignette {
   position: absolute;
   inset: 0;
@@ -846,13 +997,6 @@ main {
     rgba(0, 0, 0, 0.52) 100%
   );
   box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.36);
-}
-.hero__inner {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 880px;
-  margin-inline: auto;
 }
 
 .hero__eyebrow {
@@ -905,7 +1049,7 @@ main {
   animation-delay: 0.3s;
 }
 
-.hero-atmosphere--reduced ~ .hero__inner > * {
+.hero-atmosphere--reduced ~ .hero__shell .hero__inner > * {
   animation: none;
 }
 
@@ -3442,7 +3586,7 @@ main {
     animation: none !important;
   }
 
-  .hero__inner > * {
+  .hero__shell .hero__inner > * {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
