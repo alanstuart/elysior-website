@@ -712,8 +712,9 @@ main {
   }
 }
 
-/* Mobile: Cloudinary still frame behind copy — no video, no autoplay, zero layout impact */
-.hero__motionPoster {
+/* Mobile: Cloudinary background behind copy (poster-only if reduced motion; else autoplay video) */
+.hero__motionPoster,
+.hero__motionMobileVideo {
   display: none;
 }
 
@@ -755,12 +756,8 @@ main {
       );
   }
 
-  .hero__motionPosterImg--videoOn {
-    opacity: 0;
-    transition: opacity 0.36s ease;
-  }
-
   .hero__motionMobileVideo {
+    display: block;
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -776,41 +773,20 @@ main {
     max-width: none;
     object-fit: cover;
     object-position: 78% 42%;
-    opacity: 0.22;
+    opacity: 0.44;
   }
 
-  .hero__shell .hero__motionTap {
-    display: block;
-    position: absolute;
-    right: max(12px, env(safe-area-inset-right, 0px));
-    bottom: max(16px, env(safe-area-inset-bottom, 0px));
-    z-index: 4;
-    pointer-events: auto;
-  }
-
-  .hero__motionTapBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 1px solid rgba(130, 150, 230, 0.38);
-    border-radius: 50%;
-    background: rgba(4, 10, 24, 0.58);
-    color: rgba(236, 240, 255, 0.94);
-    cursor: pointer;
-    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.38);
-  }
-
-  .hero__motionTapBtn:focus-visible {
-    outline: 2px solid rgba(160, 190, 255, 0.95);
-    outline-offset: 2px;
-  }
-
-  .hero__motionTapIcon {
-    width: 18px;
-    height: 18px;
+  /* Slightly lighter scrim so looping video reads under copy */
+  .hero__motionMobileVideo .hero__motionPosterScrim {
+    background:
+      radial-gradient(ellipse 72% 58% at 86% 32%, rgba(72, 96, 168, 0.16) 0%, transparent 55%),
+      linear-gradient(
+        102deg,
+        rgba(1, 2, 10, 0.82) 0%,
+        rgba(2, 6, 18, 0.48) 40%,
+        rgba(2, 8, 22, 0.28) 62%,
+        rgba(6, 12, 32, 0.42) 100%
+      );
   }
 }
 
@@ -832,11 +808,8 @@ main {
 }
 
 @media (min-width: 769px) {
-  .hero__motionPoster {
-    display: none !important;
-  }
-
-  .hero__motionTap {
+  .hero__motionPoster,
+  .hero__motionMobileVideo {
     display: none !important;
   }
 }
@@ -3672,10 +3645,6 @@ main {
   .hero__gasBlob,
   .hero__gasBlob::after {
     animation: none !important;
-  }
-
-  .hero__motionTap {
-    display: none !important;
   }
 
   .hero .btn--heroPrimary::before {
