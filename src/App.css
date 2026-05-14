@@ -754,6 +754,64 @@ main {
         rgba(6, 12, 32, 0.52) 100%
       );
   }
+
+  .hero__motionPosterImg--videoOn {
+    opacity: 0;
+    transition: opacity 0.36s ease;
+  }
+
+  .hero__motionMobileVideo {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .hero__motionMobileVideoEl {
+    position: absolute;
+    inset: -8% -12% -6%;
+    width: 124%;
+    height: 120%;
+    max-width: none;
+    object-fit: cover;
+    object-position: 78% 42%;
+    opacity: 0.22;
+  }
+
+  .hero__shell .hero__motionTap {
+    display: block;
+    position: absolute;
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: max(16px, env(safe-area-inset-bottom, 0px));
+    z-index: 4;
+    pointer-events: auto;
+  }
+
+  .hero__motionTapBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid rgba(130, 150, 230, 0.38);
+    border-radius: 50%;
+    background: rgba(4, 10, 24, 0.58);
+    color: rgba(236, 240, 255, 0.94);
+    cursor: pointer;
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.38);
+  }
+
+  .hero__motionTapBtn:focus-visible {
+    outline: 2px solid rgba(160, 190, 255, 0.95);
+    outline-offset: 2px;
+  }
+
+  .hero__motionTapIcon {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 /* Static blobs + poster: slightly stronger scrim so copy stays crisp without motion */
@@ -775,6 +833,10 @@ main {
 
 @media (min-width: 769px) {
   .hero__motionPoster {
+    display: none !important;
+  }
+
+  .hero__motionTap {
     display: none !important;
   }
 }
@@ -3610,6 +3672,10 @@ main {
   .hero__gasBlob,
   .hero__gasBlob::after {
     animation: none !important;
+  }
+
+  .hero__motionTap {
+    display: none !important;
   }
 
   .hero .btn--heroPrimary::before {

@@ -235,6 +235,24 @@ function buildCopy(lang) {
         pt: 'Solicitar Proposta',
         fr: 'Demander une proposition',
       }),
+      motionPlayAria: L({
+        es: 'Reproducir video de fondo del hero',
+        en: 'Play hero background video',
+        pt: 'Reproduzir vídeo de fundo do hero',
+        fr: 'Lire la vidéo d’arrière-plan du hero',
+      }),
+      motionPauseAria: L({
+        es: 'Pausar video de fondo del hero',
+        en: 'Pause hero background video',
+        pt: 'Pausar vídeo de fundo do hero',
+        fr: 'Mettre en pause la vidéo d’arrière-plan du hero',
+      }),
+      motionUnavailableSaveData: L({
+        es: 'No disponible con ahorro de datos activado',
+        en: 'Unavailable while data saver is on',
+        pt: 'Indisponível com economia de dados ativa',
+        fr: 'Indisponible avec économiseur de données activé',
+      }),
       badgesAria: L({
         es: 'Señales de confianza',
         en: 'Trust signals',

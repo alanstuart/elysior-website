@@ -20,6 +20,9 @@ function calHref(kind) {
 }
 const HERO_MOTION_VIDEO_SRC =
   'https://res.cloudinary.com/dxkathdnc/video/upload/q_auto:eco,f_auto,w_1200/v1778717928/hero-motion_uzxyws.mp4'
+/** Lighter transcode for optional tap-to-play on mobile only. */
+const HERO_MOTION_VIDEO_SRC_MOBILE =
+  'https://res.cloudinary.com/dxkathdnc/video/upload/q_auto:eco,f_auto,w_720/v1778717928/hero-motion_uzxyws.mp4'
 /** First-frame still from the same Cloudinary asset — no video download on mobile. */
 const HERO_MOTION_POSTER_SRC =
   'https://res.cloudinary.com/dxkathdnc/video/upload/so_0,w_900,h_506,c_fill,q_auto:eco,f_auto/v1778717928/hero-motion_uzxyws.jpg'
@@ -117,6 +120,33 @@ function useHeroMotionPosterMobile() {
     return () => mq.removeEventListener('change', sync)
   }, [])
   return active
+}
+
+function shouldOfferMobileHeroMotion() {
+  if (typeof navigator === 'undefined') return true
+  const conn = navigator.connection
+  if (!conn || typeof conn !== 'object') return true
+  if (conn.saveData === true) return false
+  const et = conn.effectiveType
+  if (et === 'slow-2g' || et === '2g') return false
+  return true
+}
+
+function useMobileHeroMotionNetworkOffer() {
+  const [offer, setOffer] = useState(() =>
+    typeof navigator !== 'undefined' ? shouldOfferMobileHeroMotion() : true,
+  )
+  useEffect(() => {
+    const sync = () => setOffer(shouldOfferMobileHeroMotion())
+    sync()
+    const conn = navigator.connection
+    if (conn && typeof conn.addEventListener === 'function') {
+      conn.addEventListener('change', sync)
+      return () => conn.removeEventListener('change', sync)
+    }
+    return undefined
+  }, [])
+  return offer
 }
 
 const MAG_MAX_PX = 10
@@ -225,6 +255,9 @@ function App() {
   const reducedMotion = usePrefersReducedMotion()
   const heroMotionVideo = useHeroMotionVideoEnabled(reducedMotion)
   const heroMotionPosterMobile = useHeroMotionPosterMobile()
+  const heroMotionNetworkOffer = useMobileHeroMotionNetworkOffer()
+  const [mobileHeroMotionVideoOn, setMobileHeroMotionVideoOn] = useState(false)
+  const mobileHeroVideoRef = useRef(null)
   const [lang, setLang] = useState(() => {
     if (typeof window === 'undefined') return 'es'
     const s = localStorage.getItem(LANG_STORAGE_KEY)
@@ -270,6 +303,24 @@ function App() {
     localStorage.setItem(LANG_STORAGE_KEY, lang)
     document.documentElement.lang = copy.htmlLang
   }, [lang, copy.htmlLang])
+
+  useEffect(() => {
+    if (!heroMotionPosterMobile) setMobileHeroMotionVideoOn(false)
+  }, [heroMotionPosterMobile])
+
+  useEffect(() => {
+    if (!reducedMotion) return
+    setMobileHeroMotionVideoOn(false)
+    mobileHeroVideoRef.current?.pause()
+  }, [reducedMotion])
+
+  useEffect(() => {
+    if (!mobileHeroMotionVideoOn || !heroMotionPosterMobile) return
+    const v = mobileHeroVideoRef.current
+    if (!v) return
+    const p = v.play()
+    if (p !== undefined && typeof p.catch === 'function') p.catch(() => {})
+  }, [mobileHeroMotionVideoOn, heroMotionPosterMobile])
 
   useEffect(() => {
     if (reducedMotion) return undefined
@@ -321,6 +372,13 @@ function App() {
   }, [carouselPause, reducedMotion, testimonialCount])
 
   const closeNav = useCallback(() => setNavOpen(false), [])
+
+  const toggleMobileHeroMotionVideo = useCallback(() => {
+    setMobileHeroMotionVideoOn((on) => {
+      if (on) mobileHeroVideoRef.current?.pause()
+      return !on
+    })
+  }, [])
 
   const closeSuccessModal = useCallback(() => {
     setFormStatus(null)
@@ -498,18 +556,41 @@ function App() {
           <HeroAtmosphere reducedMotion={reducedMotion} />
 
           {heroMotionPosterMobile ? (
-            <div className="hero__motionPoster" aria-hidden>
-              <img
-                className="hero__motionPosterImg"
-                src={HERO_MOTION_POSTER_SRC}
-                alt=""
-                width={900}
-                height={506}
-                decoding="async"
-                fetchPriority="low"
-              />
-              <div className="hero__motionPosterScrim" />
-            </div>
+            <>
+              <div className="hero__motionPoster" aria-hidden>
+                <img
+                  className={
+                    mobileHeroMotionVideoOn
+                      ? 'hero__motionPosterImg hero__motionPosterImg--videoOn'
+                      : 'hero__motionPosterImg'
+                  }
+                  src={HERO_MOTION_POSTER_SRC}
+                  alt=""
+                  width={900}
+                  height={506}
+                  decoding="async"
+                  fetchPriority="low"
+                />
+                <div className="hero__motionPosterScrim" />
+              </div>
+              {mobileHeroMotionVideoOn ? (
+                <div className="hero__motionMobileVideo" aria-hidden>
+                  <video
+                    ref={mobileHeroVideoRef}
+                    className="hero__motionMobileVideoEl"
+                    muted
+                    loop
+                    playsInline
+                    preload="none"
+                    disablePictureInPicture
+                    controls={false}
+                  >
+                    <source src={HERO_MOTION_VIDEO_SRC_MOBILE} type="video/mp4" />
+                  </video>
+                  <div className="hero__motionPosterScrim hero__motionMobileVideoScrim" />
+                </div>
+              ) : null}
+            </>
           ) : null}
 
           <div className="section__inner hero__shell">
@@ -559,6 +640,32 @@ function App() {
                   </video>
                   <div className="hero__motionOverlay" />
                 </div>
+              </div>
+            ) : null}
+
+            {heroMotionPosterMobile && !reducedMotion && heroMotionNetworkOffer ? (
+              <div className="hero__motionTap">
+                <button
+                  type="button"
+                  className="hero__motionTapBtn"
+                  onClick={toggleMobileHeroMotionVideo}
+                  aria-pressed={mobileHeroMotionVideoOn}
+                  aria-label={
+                    mobileHeroMotionVideoOn
+                      ? copy.hero.motionPauseAria
+                      : copy.hero.motionPlayAria
+                  }
+                >
+                  {mobileHeroMotionVideoOn ? (
+                    <svg className="hero__motionTapIcon" viewBox="0 0 24 24" aria-hidden>
+                      <path fill="currentColor" d="M6 5h4v14H6V5zm8 0h4v14h-4V5z" />
+                    </svg>
+                  ) : (
+                    <svg className="hero__motionTapIcon" viewBox="0 0 24 24" aria-hidden>
+                      <path fill="currentColor" d="M8 5v14l11-7L8 5z" />
+                    </svg>
+                  )}
+                </button>
               </div>
             ) : null}
           </div>
