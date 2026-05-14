@@ -3467,3 +3467,40 @@ main {
     scroll-behavior: smooth;
   }
 }
+
+/* Mobile GPU/paint relief — keeps the visual feel but cuts the work the device must do per frame */
+@media (max-width: 768px) {
+  .hero__gasBlob {
+    filter: blur(56px);
+    animation-duration: 140s, 180s;
+  }
+
+  .hero__gasBlob::after {
+    filter: blur(32px);
+  }
+
+  .hero__gasBlob--3,
+  .hero__gasBlob--4 {
+    display: none;
+  }
+
+  .hero__vignette {
+    box-shadow: none;
+  }
+
+  .glass,
+  .btn--ghost,
+  .hero .btn--heroGhost,
+  .nav,
+  .nav--scrolled,
+  .nav__sheet {
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__gasBlob {
+    animation: none;
+  }
+}

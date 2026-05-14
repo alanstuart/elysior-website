@@ -238,10 +238,21 @@ function App() {
   }, [reducedMotion])
 
   useEffect(() => {
-    const onScroll = () => setNavScrolled(window.scrollY > 32)
-    onScroll()
+    let frame = 0
+    const update = () => {
+      frame = 0
+      setNavScrolled(window.scrollY > 32)
+    }
+    const onScroll = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(update)
+    }
+    update()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
   }, [])
 
   useEffect(() => {
