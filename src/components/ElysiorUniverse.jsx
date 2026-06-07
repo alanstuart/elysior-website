@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Environment, Float, Stars } from '@react-three/drei'
-import { Bloom, EffectComposer } from '@react-three/postprocessing'
+import { Bloom, ChromaticAberration, EffectComposer } from '@react-three/postprocessing'
 import { useMotionValueEvent, useScroll, useVelocity } from 'framer-motion'
 import { MathUtils, Object3D, Quaternion, Vector3 } from 'three'
 import './ElysiorUniverse.css'
@@ -209,6 +209,39 @@ function GlassStructure({ scrollVelocityRef }) {
   )
 }
 
+function PostProcessingEffects() {
+  const aberrationRef = useRef(null)
+  const glitchIntensity = useRef(0)
+
+  useEffect(() => {
+    const onMouseDown = () => {
+      glitchIntensity.current = 0.04
+    }
+    window.addEventListener('mousedown', onMouseDown)
+    return () => window.removeEventListener('mousedown', onMouseDown)
+  }, [])
+
+  useFrame((_, delta) => {
+    glitchIntensity.current = MathUtils.damp(glitchIntensity.current, 0, 9, delta)
+    const effect = aberrationRef.current
+    if (effect?.offset) {
+      effect.offset.set(glitchIntensity.current, glitchIntensity.current)
+    }
+  })
+
+  return (
+    <EffectComposer multisampling={0}>
+      <Bloom mipmapBlur intensity={1.5} luminanceThreshold={0.1} />
+      <ChromaticAberration
+        ref={aberrationRef}
+        offset={[0, 0]}
+        radialModulation={false}
+        modulationOffset={0}
+      />
+    </EffectComposer>
+  )
+}
+
 function UniverseScene({ scrollVelocityRef, isMobile }) {
   const shootingCount = isMobile ? 4 : 12
 
@@ -227,9 +260,7 @@ function UniverseScene({ scrollVelocityRef, isMobile }) {
       <ShootingStars count={shootingCount} />
       <GlassStructure scrollVelocityRef={scrollVelocityRef} />
 
-      <EffectComposer multisampling={0}>
-        <Bloom mipmapBlur intensity={1.5} luminanceThreshold={0.1} />
-      </EffectComposer>
+      <PostProcessingEffects />
     </>
   )
 }
