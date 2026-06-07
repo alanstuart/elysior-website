@@ -55,6 +55,31 @@ const SCATTER = {
   settleEpsilon: 0.018,
 }
 
+const scrollColorDeepPrimary = new Color('#2d5bff')
+const scrollColorDeepSecondary = new Color('#5c1fa8')
+const scrollColorCyan = new Color('#00f3ff')
+const scrollColorCrimson = new Color('#ff0033')
+
+function getScrollTimelineColor(offset, target, lane = 'primary') {
+  const deep = lane === 'primary' ? scrollColorDeepPrimary : scrollColorDeepSecondary
+
+  if (offset <= 0.5) {
+    target.copy(deep).lerp(scrollColorCyan, offset / 0.5)
+  } else {
+    target.copy(scrollColorCyan).lerp(scrollColorCrimson, (offset - 0.5) / 0.5)
+  }
+
+  return target
+}
+
+function getScrollEmissiveIntensity(offset) {
+  if (offset <= 0.5) {
+    return 0.25 + (0.95 * offset) / 0.5
+  }
+
+  return 1.2 + (1.35 * (offset - 0.5)) / 0.5
+}
+
 let coreGlassGeometry = null
 let scatterPointsGeometry = null
 
@@ -231,31 +256,52 @@ function ScrollLinkedStars({ scrollVelocityRef }) {
   )
 }
 
-function EmergencyOverloadLight({ progressVelocityRef }) {
-  const lightRef = useRef(null)
-  const colorScratch = useMemo(() => new Color('#7000ff'), [])
-  const violet = useMemo(() => new Color('#7000ff'), [])
-  const red = useMemo(() => new Color('#ff0000'), [])
+function ScrollProgressLights() {
+  const scroll = useScroll()
+  const primaryRef = useRef(null)
+  const secondaryRef = useRef(null)
+  const primaryDisplay = useMemo(() => new Color('#2d5bff'), [])
+  const secondaryDisplay = useMemo(() => new Color('#5c1fa8'), [])
+  const targetPrimary = useMemo(() => new Color(), [])
+  const targetSecondary = useMemo(() => new Color(), [])
 
   useFrame((_, delta) => {
-    const light = lightRef.current
-    if (!light) return
+    const offset = scroll.offset
+    const smooth = 1 - Math.exp(-10 * delta)
 
-    const speed = Math.abs(progressVelocityRef.current)
-    const target = speed >= SCATTER.explodeVelocity ? red : violet
-    colorScratch.lerp(target, 1 - Math.exp(-14 * delta))
-    light.color.copy(colorScratch)
+    getScrollTimelineColor(offset, targetPrimary, 'primary')
+    getScrollTimelineColor(offset, targetSecondary, 'secondary')
+
+    primaryDisplay.lerp(targetPrimary, smooth)
+    secondaryDisplay.lerp(targetSecondary, smooth)
+
+    if (primaryRef.current) {
+      primaryRef.current.color.copy(primaryDisplay)
+    }
+    if (secondaryRef.current) {
+      secondaryRef.current.color.copy(secondaryDisplay)
+    }
   })
 
   return (
-    <pointLight
-      ref={lightRef}
-      position={[-6, -4, 5]}
-      intensity={55}
-      color="#7000ff"
-      distance={40}
-      decay={2}
-    />
+    <>
+      <pointLight
+        ref={primaryRef}
+        position={[6, 5, 4]}
+        intensity={60}
+        color="#2d5bff"
+        distance={40}
+        decay={2}
+      />
+      <pointLight
+        ref={secondaryRef}
+        position={[-6, -4, 5]}
+        intensity={55}
+        color="#5c1fa8"
+        distance={40}
+        decay={2}
+      />
+    </>
   )
 }
 
@@ -277,6 +323,8 @@ function GlassStructure({ scrollVelocityRef, progressVelocityRef }) {
   const scatterActiveRef = useRef(false)
   const spinRef = useRef(0.18)
   const parallaxRef = useRef({ x: 0, y: 0 })
+  const emissiveTarget = useMemo(() => new Color(), [])
+  const emissiveDisplay = useMemo(() => new Color('#001a33'), [])
 
   useEffect(() => {
     const { core: coreGeometry } = getGlassGeometries()
@@ -459,6 +507,11 @@ function GlassStructure({ scrollVelocityRef, progressVelocityRef }) {
 
     if (meshMaterialRef.current) {
       meshMaterialRef.current.opacity = meshOpacityRef.current
+
+      getScrollTimelineColor(scrollOffset, emissiveTarget, 'primary')
+      emissiveDisplay.lerp(emissiveTarget, 1 - Math.exp(-10 * delta))
+      meshMaterialRef.current.emissive.copy(emissiveDisplay)
+      meshMaterialRef.current.emissiveIntensity = getScrollEmissiveIntensity(scrollOffset)
     }
     if (pointsMaterialRef.current) {
       pointsMaterialRef.current.opacity = pointsOpacityRef.current
@@ -544,8 +597,7 @@ function UniverseScene({ scrollVelocityRef, progressVelocityRef, isMobile }) {
       <Environment preset="city" />
 
       <ambientLight intensity={0.2} />
-      <pointLight position={[6, 5, 4]} intensity={60} color="#00f3ff" distance={40} decay={2} />
-      <EmergencyOverloadLight progressVelocityRef={progressVelocityRef} />
+      <ScrollProgressLights />
 
       <ScrollLinkedStars scrollVelocityRef={scrollVelocityRef} />
       <ShootingStars count={shootingCount} />
