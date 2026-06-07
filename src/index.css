@@ -19,6 +19,8 @@ body {
 }
 
 #root {
+  position: relative;
+  isolation: isolate;
   width: 100%;
   max-width: none;
   margin: 0;

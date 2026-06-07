@@ -1,8 +1,8 @@
 import { Component, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, Float, Stars } from '@react-three/drei'
+import { Environment, Float, ScrollControls, Stars, useScroll } from '@react-three/drei'
 import { Bloom, ChromaticAberration, EffectComposer } from '@react-three/postprocessing'
-import { useMotionValueEvent, useScroll, useVelocity } from 'framer-motion'
+import { useMotionValueEvent, useScroll as useFramerScroll, useVelocity } from 'framer-motion'
 import { MathUtils, Object3D, Quaternion, Vector2, Vector3 } from 'three'
 import './ElysiorUniverse.css'
 
@@ -47,7 +47,7 @@ const SHOOT_QUAT = new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), SHO
 const _dummy = new Object3D()
 
 function useScrollVelocityRef() {
-  const { scrollY } = useScroll()
+  const { scrollY } = useFramerScroll()
   const velocity = useVelocity(scrollY)
   const velocityRef = useRef(0)
 
@@ -159,6 +159,29 @@ function ShootingStars({ count }) {
   )
 }
 
+function DocumentScrollSync() {
+  const scroll = useScroll()
+  const scrollElementRef = useRef(null)
+
+  useEffect(() => {
+    scrollElementRef.current = scroll.el
+  }, [scroll])
+
+  useFrame(() => {
+    const el = scrollElementRef.current
+    if (!el) return
+
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+    const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0
+    const limit = el.scrollHeight - el.clientHeight
+    if (limit > 0) {
+      el.scrollTop = progress * limit
+    }
+  })
+
+  return null
+}
+
 function ScrollLinkedStars({ scrollVelocityRef }) {
   const groupRef = useRef(null)
   const warpRef = useRef(1)
@@ -183,9 +206,41 @@ function ScrollLinkedStars({ scrollVelocityRef }) {
 }
 
 function GlassStructure({ scrollVelocityRef }) {
+  const scroll = useScroll()
   const rigRef = useRef(null)
+  const coreMeshRef = useRef(null)
+  const originalPositionsRef = useRef(null)
+  const spherePositionsRef = useRef(null)
+  const lastMorphOffsetRef = useRef(-1)
   const spinRef = useRef(0.18)
   const parallaxRef = useRef({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const mesh = coreMeshRef.current
+    if (!mesh) return
+
+    const positions = mesh.geometry.attributes.position
+    originalPositionsRef.current = new Float32Array(positions.array)
+
+    const sphereTargets = new Float32Array(positions.count * 3)
+    const center = new Vector3()
+    mesh.geometry.computeBoundingBox()
+    mesh.geometry.boundingBox.getCenter(center)
+    const sphereRadius = 1.12
+
+    for (let i = 0; i < positions.count; i += 1) {
+      const i3 = i * 3
+      const ox = positions.array[i3] - center.x
+      const oy = positions.array[i3 + 1] - center.y
+      const oz = positions.array[i3 + 2] - center.z
+      const len = Math.sqrt(ox * ox + oy * oy + oz * oz) || 1
+      sphereTargets[i3] = (ox / len) * sphereRadius + center.x
+      sphereTargets[i3 + 1] = (oy / len) * sphereRadius + center.y
+      sphereTargets[i3 + 2] = (oz / len) * sphereRadius + center.z
+    }
+
+    spherePositionsRef.current = sphereTargets
+  }, [])
 
   useFrame((state, delta) => {
     const rig = rigRef.current
@@ -201,16 +256,54 @@ function GlassStructure({ scrollVelocityRef }) {
     parallaxRef.current.x = MathUtils.damp(parallaxRef.current.x, targetX, 5.5, delta)
     parallaxRef.current.y = MathUtils.damp(parallaxRef.current.y, targetY, 5.5, delta)
 
-    rig.position.x = 1.8 - parallaxRef.current.x * 0.55
+    rig.position.x = 0.55 - parallaxRef.current.x * 0.55
     rig.position.y = -parallaxRef.current.y * 0.38
     rig.rotation.x = parallaxRef.current.y * 0.14
     rig.rotation.z = parallaxRef.current.x * 0.1
+
+    const scrollOffset = scroll.offset
+    if (Math.abs(scrollOffset - lastMorphOffsetRef.current) < 0.00015) return
+
+    const mesh = coreMeshRef.current
+    const original = originalPositionsRef.current
+    const sphere = spherePositionsRef.current
+    if (!mesh || !original || !sphere) return
+
+    lastMorphOffsetRef.current = scrollOffset
+
+    const brutal = Math.sin(scrollOffset * Math.PI)
+    const toSphere = MathUtils.smoothstep(0.42, 1, scrollOffset)
+    const positions = mesh.geometry.attributes.position.array
+
+    for (let i = 0; i < original.length; i += 3) {
+      const ox = original[i]
+      const oy = original[i + 1]
+      const oz = original[i + 2]
+
+      const waveX = Math.sin(ox * 5.7 + oy * 3.2 + oz * 2.4)
+      const waveY = Math.cos(oy * 6.1 + oz * 4.8 - ox * 1.9)
+      const waveZ = Math.sin(oz * 4.3 + ox * 7.5 + oy * 2.1)
+      const shardA = Math.sin(ox * 18 + oy * 14 + oz * 22)
+      const shardB = Math.cos(ox * 11 - oz * 16 + oy * 9)
+
+      const amp = brutal * (0.18 + scrollOffset * 0.1)
+      const dx = ox + (waveX * 0.32 + shardA * 0.68) * amp * 1.45
+      const dy = oy + (waveY * 0.32 + shardB * 0.68) * amp * 1.15
+      const dz = oz + (waveZ * 0.32 + shardA * shardB * 0.52) * amp * 1.65
+
+      positions[i] = dx + (sphere[i] - dx) * toSphere
+      positions[i + 1] = dy + (sphere[i + 1] - dy) * toSphere
+      positions[i + 2] = dz + (sphere[i + 2] - dz) * toSphere
+    }
+
+    mesh.geometry.attributes.position.needsUpdate = true
+    mesh.geometry.computeVertexNormals()
   })
 
   return (
     <Float floatIntensity={3} speed={2} rotationIntensity={2}>
-      <group ref={rigRef} position={[1.8, 0, -1.2]} scale={0.95}>
-        <mesh>
+      <group ref={rigRef} position={[0.55, 0, -1.4]} scale={1.05}>
+        <mesh ref={coreMeshRef}>
           <torusKnotGeometry args={[1.05, 0.28, 256, 64, 2, 5]} />
           <meshPhysicalMaterial {...GLASS} />
         </mesh>
@@ -293,7 +386,14 @@ function UniverseCanvas({ scrollVelocityRef, isMobile }) {
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
     >
       <Suspense fallback={null}>
-        <UniverseScene scrollVelocityRef={scrollVelocityRef} isMobile={isMobile} />
+        <ScrollControls
+          pages={1}
+          damping={0.12}
+          style={{ pointerEvents: 'none', visibility: 'hidden', overflow: 'hidden' }}
+        >
+          <DocumentScrollSync />
+          <UniverseScene scrollVelocityRef={scrollVelocityRef} isMobile={isMobile} />
+        </ScrollControls>
       </Suspense>
     </Canvas>
   )

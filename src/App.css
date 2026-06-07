@@ -29,7 +29,7 @@
 
   position: relative;
   isolation: isolate;
-  z-index: 10;
+  z-index: 1;
   min-height: 100svh;
   background: transparent;
   color: var(--text);
@@ -131,7 +131,7 @@
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background: radial-gradient(ellipse 72% 62% at 50% 48%, transparent 28%, rgba(0, 0, 0, 0.62) 100%);
+  background: radial-gradient(ellipse 72% 62% at 50% 48%, transparent 28%, rgba(0, 0, 0, 0.42) 100%);
 }
 
 .landing__glow {
