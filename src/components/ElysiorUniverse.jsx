@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { Environment, Float, ScrollControls, Stars, useScroll } from '@react-three/drei'
 import { Bloom, ChromaticAberration, EffectComposer } from '@react-three/postprocessing'
 import { useMotionValueEvent, useScroll as useFramerScroll, useVelocity } from 'framer-motion'
-import { MathUtils, Object3D, Quaternion, Vector2, Vector3 } from 'three'
+import { Color, MathUtils, Object3D, Quaternion, TorusKnotGeometry, Vector2, Vector3 } from 'three'
 import './ElysiorUniverse.css'
 
 class UniverseErrorBoundary extends Component {
@@ -46,16 +46,42 @@ const SHOOT_DIR = new Vector3(-1, -0.55, -0.25).normalize()
 const SHOOT_QUAT = new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), SHOOT_DIR)
 const _dummy = new Object3D()
 
+const SCATTER = {
+  explodeVelocity: 0.5,
+  collectVelocity: 0.12,
+  force: 3.4,
+  dampReturn: 5.5,
+  velocityDecay: 0.86,
+  settleEpsilon: 0.018,
+}
+
+let coreGlassGeometry = null
+let scatterPointsGeometry = null
+
+function getGlassGeometries() {
+  if (!coreGlassGeometry) {
+    coreGlassGeometry = new TorusKnotGeometry(1.05, 0.28, 256, 64, 2, 5)
+    scatterPointsGeometry = coreGlassGeometry.clone()
+  }
+  return { core: coreGlassGeometry, points: scatterPointsGeometry }
+}
+
 function useScrollVelocityRef() {
-  const { scrollY } = useFramerScroll()
+  const { scrollY, scrollYProgress } = useFramerScroll()
   const velocity = useVelocity(scrollY)
+  const progressVelocity = useVelocity(scrollYProgress)
   const velocityRef = useRef(0)
+  const progressVelocityRef = useRef(0)
 
   useMotionValueEvent(velocity, 'change', (v) => {
     velocityRef.current = v
   })
 
-  return velocityRef
+  useMotionValueEvent(progressVelocity, 'change', (v) => {
+    progressVelocityRef.current = v
+  })
+
+  return { velocityRef, progressVelocityRef }
 }
 
 function useIsMobileViewport() {
@@ -205,30 +231,93 @@ function ScrollLinkedStars({ scrollVelocityRef }) {
   )
 }
 
-function GlassStructure({ scrollVelocityRef }) {
+function EmergencyOverloadLight({ progressVelocityRef }) {
+  const lightRef = useRef(null)
+  const colorScratch = useMemo(() => new Color('#7000ff'), [])
+  const violet = useMemo(() => new Color('#7000ff'), [])
+  const red = useMemo(() => new Color('#ff0000'), [])
+
+  useFrame((_, delta) => {
+    const light = lightRef.current
+    if (!light) return
+
+    const speed = Math.abs(progressVelocityRef.current)
+    const target = speed >= SCATTER.explodeVelocity ? red : violet
+    colorScratch.lerp(target, 1 - Math.exp(-14 * delta))
+    light.color.copy(colorScratch)
+  })
+
+  return (
+    <pointLight
+      ref={lightRef}
+      position={[-6, -4, 5]}
+      intensity={55}
+      color="#7000ff"
+      distance={40}
+      decay={2}
+    />
+  )
+}
+
+function GlassStructure({ scrollVelocityRef, progressVelocityRef }) {
   const scroll = useScroll()
   const rigRef = useRef(null)
   const coreMeshRef = useRef(null)
+  const pointsRef = useRef(null)
+  const meshMaterialRef = useRef(null)
+  const pointsMaterialRef = useRef(null)
   const originalPositionsRef = useRef(null)
   const spherePositionsRef = useRef(null)
+  const scatterOffsetsRef = useRef(null)
+  const scatterVelocitiesRef = useRef(null)
+  const burstDirectionsRef = useRef(null)
   const lastMorphOffsetRef = useRef(-1)
+  const meshOpacityRef = useRef(1)
+  const pointsOpacityRef = useRef(0)
+  const scatterActiveRef = useRef(false)
   const spinRef = useRef(0.18)
   const parallaxRef = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
-    const mesh = coreMeshRef.current
-    if (!mesh) return
-
-    const positions = mesh.geometry.attributes.position
+    const { core: coreGeometry } = getGlassGeometries()
+    const positions = coreGeometry.attributes.position
+    const count = positions.count
     originalPositionsRef.current = new Float32Array(positions.array)
+    scatterOffsetsRef.current = new Float32Array(positions.array.length)
+    scatterVelocitiesRef.current = new Float32Array(positions.array.length)
 
-    const sphereTargets = new Float32Array(positions.count * 3)
+    const directions = new Float32Array(positions.array.length)
     const center = new Vector3()
-    mesh.geometry.computeBoundingBox()
-    mesh.geometry.boundingBox.getCenter(center)
+    coreGeometry.computeBoundingBox()
+    coreGeometry.boundingBox.getCenter(center)
+
+    for (let i = 0; i < count; i += 1) {
+      const i3 = i * 3
+      const ox = positions.array[i3] - center.x
+      const oy = positions.array[i3 + 1] - center.y
+      const oz = positions.array[i3 + 2] - center.z
+      const len = Math.sqrt(ox * ox + oy * oy + oz * oz) || 1
+      const jitter = 0.35
+      directions[i3] = ox / len + (Math.random() - 0.5) * jitter
+      directions[i3 + 1] = oy / len + (Math.random() - 0.5) * jitter
+      directions[i3 + 2] = oz / len + (Math.random() - 0.5) * jitter
+      const dLen =
+        Math.sqrt(
+          directions[i3] * directions[i3] +
+            directions[i3 + 1] * directions[i3 + 1] +
+            directions[i3 + 2] * directions[i3 + 2],
+        ) || 1
+      directions[i3] /= dLen
+      directions[i3 + 1] /= dLen
+      directions[i3 + 2] /= dLen
+    }
+
+    burstDirectionsRef.current = directions
+
+    const sphereTargets = new Float32Array(positions.array.length)
     const sphereRadius = 1.12
 
-    for (let i = 0; i < positions.count; i += 1) {
+    for (let i = 0; i < count; i += 1) {
       const i3 = i * 3
       const ox = positions.array[i3] - center.x
       const oy = positions.array[i3 + 1] - center.y
@@ -242,38 +331,15 @@ function GlassStructure({ scrollVelocityRef }) {
     spherePositionsRef.current = sphereTargets
   }, [])
 
-  useFrame((state, delta) => {
-    const rig = rigRef.current
-    if (!rig) return
-
-    const scrollAbs = Math.abs(scrollVelocityRef.current)
-    const warpTarget = 0.18 + Math.min(scrollAbs * 0.00009, 7.5)
-    spinRef.current = MathUtils.damp(spinRef.current, warpTarget, 3.8, delta)
-    rig.rotation.y += spinRef.current * delta
-
-    const targetX = state.pointer.x * 0.42
-    const targetY = state.pointer.y * 0.28
-    parallaxRef.current.x = MathUtils.damp(parallaxRef.current.x, targetX, 5.5, delta)
-    parallaxRef.current.y = MathUtils.damp(parallaxRef.current.y, targetY, 5.5, delta)
-
-    rig.position.x = 0.55 - parallaxRef.current.x * 0.55
-    rig.position.y = -parallaxRef.current.y * 0.38
-    rig.rotation.x = parallaxRef.current.y * 0.14
-    rig.rotation.z = parallaxRef.current.x * 0.1
-
-    const scrollOffset = scroll.offset
-    if (Math.abs(scrollOffset - lastMorphOffsetRef.current) < 0.00015) return
-
-    const mesh = coreMeshRef.current
+  const applyScrollMorph = (scrollOffset) => {
+    const { core: coreGeometry } = getGlassGeometries()
     const original = originalPositionsRef.current
     const sphere = spherePositionsRef.current
-    if (!mesh || !original || !sphere) return
-
-    lastMorphOffsetRef.current = scrollOffset
+    if (!original || !sphere) return
 
     const brutal = Math.sin(scrollOffset * Math.PI)
     const toSphere = MathUtils.smoothstep(0.42, 1, scrollOffset)
-    const positions = mesh.geometry.attributes.position.array
+    const positions = coreGeometry.attributes.position.array
 
     for (let i = 0; i < original.length; i += 3) {
       const ox = original[i]
@@ -296,17 +362,131 @@ function GlassStructure({ scrollVelocityRef }) {
       positions[i + 2] = dz + (sphere[i + 2] - dz) * toSphere
     }
 
-    mesh.geometry.attributes.position.needsUpdate = true
-    mesh.geometry.computeVertexNormals()
+    coreGeometry.attributes.position.needsUpdate = true
+    coreGeometry.computeVertexNormals()
+  }
+
+  const syncPointsFromMesh = () => {
+    const { core: coreGeometry, points: pointsGeometry } = getGlassGeometries()
+    const meshPositions = coreGeometry.attributes.position.array
+    const pointPositions = pointsGeometry.attributes.position.array
+    const offsets = scatterOffsetsRef.current
+    if (!offsets) return
+
+    for (let i = 0; i < meshPositions.length; i += 1) {
+      pointPositions[i] = meshPositions[i] + offsets[i]
+    }
+
+    pointsGeometry.attributes.position.needsUpdate = true
+  }
+
+  useFrame((state, delta) => {
+    const rig = rigRef.current
+    if (!rig) return
+
+    const scrollAbs = Math.abs(scrollVelocityRef.current)
+    const progressSpeed = Math.abs(progressVelocityRef.current)
+    const warpTarget = 0.18 + Math.min(scrollAbs * 0.00009, 7.5)
+    spinRef.current = MathUtils.damp(spinRef.current, warpTarget, 3.8, delta)
+    rig.rotation.y += spinRef.current * delta
+
+    const targetX = state.pointer.x * 0.42
+    const targetY = state.pointer.y * 0.28
+    parallaxRef.current.x = MathUtils.damp(parallaxRef.current.x, targetX, 5.5, delta)
+    parallaxRef.current.y = MathUtils.damp(parallaxRef.current.y, targetY, 5.5, delta)
+
+    rig.position.x = 0.55 - parallaxRef.current.x * 0.55
+    rig.position.y = -parallaxRef.current.y * 0.38
+    rig.rotation.x = parallaxRef.current.y * 0.14
+    rig.rotation.z = parallaxRef.current.x * 0.1
+
+    const scrollOffset = scroll.offset
+    const exploding = progressSpeed >= SCATTER.explodeVelocity
+    const settling = progressSpeed <= SCATTER.collectVelocity
+
+    if (!scatterActiveRef.current && Math.abs(scrollOffset - lastMorphOffsetRef.current) >= 0.00015) {
+      applyScrollMorph(scrollOffset)
+      lastMorphOffsetRef.current = scrollOffset
+    }
+
+    const offsets = scatterOffsetsRef.current
+    const velocities = scatterVelocitiesRef.current
+    const directions = burstDirectionsRef.current
+
+    if (exploding && offsets && velocities && directions) {
+      scatterActiveRef.current = true
+      const impulse = progressSpeed * SCATTER.force * delta
+
+      for (let i = 0; i < offsets.length; i += 3) {
+        velocities[i] += directions[i] * impulse * (0.85 + Math.random() * 0.3)
+        velocities[i + 1] += directions[i + 1] * impulse * (0.85 + Math.random() * 0.3)
+        velocities[i + 2] += directions[i + 2] * impulse * (0.85 + Math.random() * 0.3)
+        offsets[i] += velocities[i] * delta
+        offsets[i + 1] += velocities[i + 1] * delta
+        offsets[i + 2] += velocities[i + 2] * delta
+      }
+    } else if (scatterActiveRef.current && settling && offsets && velocities) {
+      let maxOffset = 0
+
+      for (let i = 0; i < offsets.length; i += 3) {
+        offsets[i] = MathUtils.damp(offsets[i], 0, SCATTER.dampReturn, delta)
+        offsets[i + 1] = MathUtils.damp(offsets[i + 1], 0, SCATTER.dampReturn, delta)
+        offsets[i + 2] = MathUtils.damp(offsets[i + 2], 0, SCATTER.dampReturn, delta)
+        velocities[i] *= SCATTER.velocityDecay
+        velocities[i + 1] *= SCATTER.velocityDecay
+        velocities[i + 2] *= SCATTER.velocityDecay
+        maxOffset = Math.max(
+          maxOffset,
+          Math.abs(offsets[i]),
+          Math.abs(offsets[i + 1]),
+          Math.abs(offsets[i + 2]),
+        )
+      }
+
+      if (maxOffset < SCATTER.settleEpsilon) {
+        scatterActiveRef.current = false
+        offsets.fill(0)
+        velocities.fill(0)
+        applyScrollMorph(scrollOffset)
+        lastMorphOffsetRef.current = scrollOffset
+      }
+    }
+
+    const meshTarget = scatterActiveRef.current ? 0 : 1
+    const pointsTarget = scatterActiveRef.current ? 1 : 0
+    meshOpacityRef.current = MathUtils.damp(meshOpacityRef.current, meshTarget, 10, delta)
+    pointsOpacityRef.current = MathUtils.damp(pointsOpacityRef.current, pointsTarget, 10, delta)
+
+    if (meshMaterialRef.current) {
+      meshMaterialRef.current.opacity = meshOpacityRef.current
+    }
+    if (pointsMaterialRef.current) {
+      pointsMaterialRef.current.opacity = pointsOpacityRef.current
+    }
+
+    if (scatterActiveRef.current || pointsOpacityRef.current > 0.01) {
+      syncPointsFromMesh()
+    }
   })
 
   return (
     <Float floatIntensity={3} speed={2} rotationIntensity={2}>
       <group ref={rigRef} position={[0.55, 0, -1.4]} scale={1.05}>
-        <mesh ref={coreMeshRef}>
-          <torusKnotGeometry args={[1.05, 0.28, 256, 64, 2, 5]} />
-          <meshPhysicalMaterial {...GLASS} />
+        <mesh ref={coreMeshRef} geometry={getGlassGeometries().core}>
+          <meshPhysicalMaterial ref={meshMaterialRef} {...GLASS} />
         </mesh>
+        <points ref={pointsRef} geometry={getGlassGeometries().points} frustumCulled={false}>
+          <pointsMaterial
+            ref={pointsMaterialRef}
+            color="#00f3ff"
+            size={0.05}
+            transparent
+            opacity={0}
+            depthWrite={false}
+            toneMapped={false}
+            sizeAttenuation
+          />
+        </points>
         <mesh rotation={[Math.PI / 2.4, 0.6, 0.35]}>
           <torusGeometry args={[1.55, 0.045, 64, 128]} />
           <meshPhysicalMaterial {...GLASS} />
@@ -353,7 +533,7 @@ function PostProcessingEffects() {
   )
 }
 
-function UniverseScene({ scrollVelocityRef, isMobile }) {
+function UniverseScene({ scrollVelocityRef, progressVelocityRef, isMobile }) {
   const shootingCount = isMobile ? 4 : 12
 
   return (
@@ -365,18 +545,21 @@ function UniverseScene({ scrollVelocityRef, isMobile }) {
 
       <ambientLight intensity={0.2} />
       <pointLight position={[6, 5, 4]} intensity={60} color="#00f3ff" distance={40} decay={2} />
-      <pointLight position={[-6, -4, 5]} intensity={55} color="#7000ff" distance={40} decay={2} />
+      <EmergencyOverloadLight progressVelocityRef={progressVelocityRef} />
 
       <ScrollLinkedStars scrollVelocityRef={scrollVelocityRef} />
       <ShootingStars count={shootingCount} />
-      <GlassStructure scrollVelocityRef={scrollVelocityRef} />
+      <GlassStructure
+        scrollVelocityRef={scrollVelocityRef}
+        progressVelocityRef={progressVelocityRef}
+      />
 
       <PostProcessingEffects />
     </>
   )
 }
 
-function UniverseCanvas({ scrollVelocityRef, isMobile }) {
+function UniverseCanvas({ scrollVelocityRef, progressVelocityRef, isMobile }) {
   const dpr = useMemo(() => (isMobile ? [1, 1.5] : [1, 2]), [isMobile])
 
   return (
@@ -392,7 +575,11 @@ function UniverseCanvas({ scrollVelocityRef, isMobile }) {
           style={{ pointerEvents: 'none', visibility: 'hidden', overflow: 'hidden' }}
         >
           <DocumentScrollSync />
-          <UniverseScene scrollVelocityRef={scrollVelocityRef} isMobile={isMobile} />
+          <UniverseScene
+            scrollVelocityRef={scrollVelocityRef}
+            progressVelocityRef={progressVelocityRef}
+            isMobile={isMobile}
+          />
         </ScrollControls>
       </Suspense>
     </Canvas>
@@ -400,7 +587,7 @@ function UniverseCanvas({ scrollVelocityRef, isMobile }) {
 }
 
 export function ElysiorUniverse({ reducedMotion = false }) {
-  const scrollVelocityRef = useScrollVelocityRef()
+  const { velocityRef, progressVelocityRef } = useScrollVelocityRef()
   const isMobile = useIsMobileViewport()
 
   if (reducedMotion) {
@@ -410,7 +597,11 @@ export function ElysiorUniverse({ reducedMotion = false }) {
   return (
     <div className="elysior-universe" aria-hidden>
       <UniverseErrorBoundary>
-        <UniverseCanvas scrollVelocityRef={scrollVelocityRef} isMobile={isMobile} />
+        <UniverseCanvas
+          scrollVelocityRef={velocityRef}
+          progressVelocityRef={progressVelocityRef}
+          isMobile={isMobile}
+        />
       </UniverseErrorBoundary>
     </div>
   )
