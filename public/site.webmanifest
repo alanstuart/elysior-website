@@ -1,0 +1,29 @@
+{
+  "name": "ELYSIOR Global",
+  "short_name": "ELYSIOR",
+  "description": "Websites premium, Google Ads y sistemas de captación de clientes.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#040814",
+  "theme_color": "#040814",
+  "icons": [
+    {
+      "src": "/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

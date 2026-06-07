@@ -1,0 +1,22 @@
+.elysior-universe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: -10;
+  pointer-events: none;
+}
+
+.elysior-universe canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.elysior-universe--static {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 20%, rgba(15, 26, 58, 0.45) 0%, transparent 55%),
+    linear-gradient(180deg, #050505 0%, #0a0a1a 100%);
+}

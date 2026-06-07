@@ -5,7 +5,7 @@ import './App.css'
  * (same project, imported here per maintainability).
  */
 import { getCopy, LANG_CODES, LANG_STORAGE_KEY } from './elysiorTranslations.js'
-import { HeroAtmosphere } from './HeroAtmosphere.jsx'
+import { ElysiorUniverse } from './components/ElysiorUniverse.jsx'
 import {
   attachCtaClickTracking,
   initGoogleAnalytics,
@@ -23,16 +23,10 @@ const CAL_LINK_REL = 'noopener noreferrer'
 function calHref(kind) {
   return kind === 'project' ? CAL_PROJECT : CAL_STRATEGY
 }
-const HERO_MOTION_VIDEO_SRC =
-  'https://res.cloudinary.com/dxkathdnc/video/upload/q_auto:eco,f_auto,w_1200/v1778717928/hero-motion_uzxyws.mp4'
-/** Mobile hero background: 1080-wide transcode for sharper retina cover (still q_auto:eco). */
-const HERO_MOTION_VIDEO_SRC_MOBILE =
-  'https://res.cloudinary.com/dxkathdnc/video/upload/q_auto:eco,f_auto,w_1080/v1778717928/hero-motion_uzxyws.mp4'
-/** First-frame still from the same Cloudinary asset (poster / reduced motion). */
-const HERO_MOTION_POSTER_SRC =
-  'https://res.cloudinary.com/dxkathdnc/video/upload/so_0,w_900,h_506,c_fill,q_auto:eco,f_auto/v1778717928/hero-motion_uzxyws.jpg'
 
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqengele'
+const LOGO_SRC = '/logo-elysior.png'
+const LOGO_ALT = 'ELYSIOR Global'
 const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61586996964376'
 const INSTAGRAM_URL = 'https://www.instagram.com/elysiorglobal/'
 const EXTERNAL_LINK_REL = 'noopener noreferrer'
@@ -95,42 +89,10 @@ function usePrefersReducedMotion() {
   return reduced
 }
 
-/** Desktop (≥769px): autoplay video in the hero grid column. */
-function useHeroMotionVideoEnabled(reducedMotion) {
-  const [enabled, setEnabled] = useState(() => {
-    if (typeof window === 'undefined') return false
-    if (reducedMotion) return false
-    return window.matchMedia('(min-width: 769px)').matches
-  })
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 769px)')
-    const sync = () => setEnabled(mq.matches && !reducedMotion)
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [reducedMotion])
-  return enabled
-}
-
-/** Mobile / narrow (≤768px): background motion layer uses this breakpoint. */
-function useHeroMotionPosterMobile() {
-  const [active, setActive] = useState(() =>
-    typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false,
-  )
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)')
-    const sync = () => setActive(mq.matches)
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
-  return active
-}
-
+/** Subtle pointer pull on fine pointers only; no-op when `reducedMotion`. */
 const MAG_MAX_PX = 10
 const MAG_STRENGTH = 0.24
 
-/** Subtle pointer pull on fine pointers only; no-op when `reducedMotion`. */
 function MagneticCta({ reducedMotion, className = '', children }) {
   const wrapRef = useRef(null)
 
@@ -231,8 +193,6 @@ function LanguageSwitcher({ lang, setLang, copy, className = '', onPick }) {
 
 function App() {
   const reducedMotion = usePrefersReducedMotion()
-  const heroMotionVideo = useHeroMotionVideoEnabled(reducedMotion)
-  const heroMotionPosterMobile = useHeroMotionPosterMobile()
   const [lang, setLang] = useState(() => {
     if (typeof window === 'undefined') return 'es'
     const s = localStorage.getItem(LANG_STORAGE_KEY)
@@ -434,11 +394,20 @@ function App() {
   const heroWords = copy.hero.titleWords
 
   return (
-    <div className={`landing${loaded ? ' landing--loaded' : ''}`}>
+    <>
+      <ElysiorUniverse reducedMotion={reducedMotion} />
+      <div className={`landing${loaded ? ' landing--loaded' : ''}`}>
       {!loaded ? (
         <div className="loadscreen" aria-busy="true" aria-live="polite">
           <div className="loadscreen__inner">
-            <span className="loadscreen__brand">ELYSIOR</span>
+            <img
+              className="loadscreen__logo"
+              src={LOGO_SRC}
+              alt={LOGO_ALT}
+              width={112}
+              height={112}
+              decoding="async"
+            />
             <div className="loadscreen__track">
               <div className="loadscreen__bar" />
             </div>
@@ -464,7 +433,14 @@ function App() {
         <div className="nav__shell glass-nav">
           <div className="nav__inner">
             <a className="nav__logo" href="#top" onClick={closeNav}>
-              <span className="nav__logo-mark">ELYSIOR</span>
+              <img
+                className="nav__logo-img"
+                src={LOGO_SRC}
+                alt={LOGO_ALT}
+                width={44}
+                height={44}
+                decoding="async"
+              />
             </a>
             <LanguageSwitcher
               lang={lang}
@@ -541,44 +517,6 @@ function App() {
 
       <main id="top">
         <section ref={heroRef} className="hero section hero--cinema hero--lux">
-          <HeroAtmosphere reducedMotion={reducedMotion} />
-
-          {heroMotionPosterMobile && reducedMotion ? (
-            <div className="hero__motionPoster" aria-hidden>
-              <img
-                className="hero__motionPosterImg"
-                src={HERO_MOTION_POSTER_SRC}
-                alt=""
-                width={900}
-                height={506}
-                decoding="async"
-                fetchPriority="low"
-              />
-              <div className="hero__motionPosterScrim" />
-            </div>
-          ) : null}
-          {heroMotionPosterMobile && !reducedMotion ? (
-            <div className="hero__motionMobileVideo" aria-hidden>
-              <video
-                className="hero__motionMobileVideoEl"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                poster={HERO_MOTION_POSTER_SRC}
-                width={900}
-                height={506}
-                fetchPriority="low"
-                disablePictureInPicture
-                controls={false}
-              >
-                <source src={HERO_MOTION_VIDEO_SRC_MOBILE} type="video/mp4" />
-              </video>
-              <div className="hero__motionPosterScrim" />
-            </div>
-          ) : null}
-
           <div className="section__inner hero__shell">
             <div className="hero__inner">
               <p className="eyebrow hero__eyebrow">
@@ -608,26 +546,6 @@ function App() {
                 </MagneticCta>
               </div>
             </div>
-
-            {heroMotionVideo ? (
-              <div className="hero__motion" aria-hidden>
-                <div className="hero__motionFrame">
-                  <video
-                    className="hero__motionVideo"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    disablePictureInPicture
-                    controls={false}
-                  >
-                    <source src={HERO_MOTION_VIDEO_SRC} type="video/mp4" />
-                  </video>
-                  <div className="hero__motionOverlay" />
-                </div>
-              </div>
-            ) : null}
           </div>
         </section>
 
@@ -1159,7 +1077,14 @@ function App() {
       <footer className="footer">
         <div className="footer__inner">
           <div className="footer__brand">
-            <span className="footer__logo">ELYSIOR</span>
+            <img
+              className="footer__logo-img"
+              src={LOGO_SRC}
+              alt={LOGO_ALT}
+              width={56}
+              height={56}
+              decoding="async"
+            />
             <p className="footer__tagline">{copy.footer.tagline}</p>
             <p className="footer__geo-line">{copy.footer.geoLine}</p>
             <div className="footer__social">
@@ -1287,6 +1212,7 @@ function App() {
         </div>
       ) : null}
     </div>
+    </>
   )
 }
 

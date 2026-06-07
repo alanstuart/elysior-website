@@ -29,13 +29,9 @@
 
   position: relative;
   isolation: isolate;
+  z-index: 10;
   min-height: 100svh;
-  background: var(--bg);
-  background-image:
-    radial-gradient(ellipse 120% 85% at 50% -30%, rgba(15, 26, 58, 0.75) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 40% at 100% 15%, rgba(91, 134, 255, 0.11) 0%, transparent 52%),
-    radial-gradient(ellipse 50% 45% at 0% 70%, rgba(180, 156, 255, 0.08) 0%, transparent 50%),
-    linear-gradient(180deg, var(--bg) 0%, #000105 100%);
+  background: transparent;
   color: var(--text);
   font-family: var(--font);
   font-size: 17px;
@@ -91,16 +87,12 @@
   width: min(320px, 80vw);
 }
 
-.loadscreen__brand {
+.loadscreen__logo {
   display: block;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: var(--tracking-brand);
-  margin-bottom: 28px;
-  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 28px;
+  object-fit: contain;
   animation: loadPulse 1.2s ease-in-out infinite;
 }
 
@@ -427,15 +419,12 @@
   align-items: center;
 }
 
-.nav__logo-mark {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: var(--tracking-brand);
-  text-transform: uppercase;
-  background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 55%, #b8924a 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+.nav__logo-img {
+  display: block;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  object-position: center;
 }
 
 .nav__toggle {
@@ -767,25 +756,25 @@ main {
 
   .hero__motionMobileVideoEl {
     position: absolute;
-    inset: -8% -12% -6%;
-    width: 124%;
-    height: 120%;
+    inset: -5% -8% -4%;
+    width: 112%;
+    height: 112%;
     max-width: none;
     object-fit: cover;
     object-position: 78% 42%;
-    opacity: 0.44;
+    opacity: 0.39;
   }
 
-  /* Slightly lighter scrim so looping video reads under copy */
+  /* Lighter veil over the clip side so 1080p motion reads clean; left stays dark for copy */
   .hero__motionMobileVideo .hero__motionPosterScrim {
     background:
-      radial-gradient(ellipse 72% 58% at 86% 32%, rgba(72, 96, 168, 0.16) 0%, transparent 55%),
+      radial-gradient(ellipse 68% 54% at 84% 34%, rgba(72, 96, 168, 0.12) 0%, transparent 58%),
       linear-gradient(
         102deg,
-        rgba(1, 2, 10, 0.82) 0%,
-        rgba(2, 6, 18, 0.48) 40%,
-        rgba(2, 8, 22, 0.28) 62%,
-        rgba(6, 12, 32, 0.42) 100%
+        rgba(1, 2, 10, 0.9) 0%,
+        rgba(2, 6, 18, 0.52) 38%,
+        rgba(2, 8, 22, 0.22) 58%,
+        rgba(6, 12, 32, 0.36) 100%
       );
   }
 }
@@ -2956,12 +2945,12 @@ main {
   }
 }
 
-.footer__logo {
+.footer__logo-img {
   display: block;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: var(--tracking-brand);
-  color: var(--gold-bright);
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  object-position: left center;
   margin-bottom: 12px;
 }
 
@@ -3630,7 +3619,7 @@ main {
 /* Reduced motion */
 
 @media (prefers-reduced-motion: reduce) {
-  .loadscreen__brand,
+  .loadscreen__logo,
   .loadscreen__bar,
   .nav__cta,
   .fab-wa,
