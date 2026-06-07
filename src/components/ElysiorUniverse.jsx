@@ -1,10 +1,32 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { Component, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Environment, Float, Stars } from '@react-three/drei'
 import { Bloom, ChromaticAberration, EffectComposer } from '@react-three/postprocessing'
 import { useMotionValueEvent, useScroll, useVelocity } from 'framer-motion'
-import { MathUtils, Object3D, Quaternion, Vector3 } from 'three'
+import { MathUtils, Object3D, Quaternion, Vector2, Vector3 } from 'three'
 import './ElysiorUniverse.css'
+
+class UniverseErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error) {
+    console.warn('[ElysiorUniverse] Canvas failed; falling back to static background.', error)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div className="elysior-universe elysior-universe--static" aria-hidden />
+    }
+    return this.props.children
+  }
+}
 
 const GLASS = {
   transmission: 1,
@@ -210,7 +232,7 @@ function GlassStructure({ scrollVelocityRef }) {
 }
 
 function PostProcessingEffects() {
-  const aberrationRef = useRef(null)
+  const aberrationOffset = useMemo(() => new Vector2(0, 0), [])
   const glitchIntensity = useRef(0)
 
   useEffect(() => {
@@ -223,18 +245,14 @@ function PostProcessingEffects() {
 
   useFrame((_, delta) => {
     glitchIntensity.current = MathUtils.damp(glitchIntensity.current, 0, 9, delta)
-    const effect = aberrationRef.current
-    if (effect?.offset) {
-      effect.offset.set(glitchIntensity.current, glitchIntensity.current)
-    }
+    aberrationOffset.set(glitchIntensity.current, glitchIntensity.current)
   })
 
   return (
     <EffectComposer multisampling={0}>
       <Bloom mipmapBlur intensity={1.5} luminanceThreshold={0.1} />
       <ChromaticAberration
-        ref={aberrationRef}
-        offset={[0, 0]}
+        offset={aberrationOffset}
         radialModulation={false}
         modulationOffset={0}
       />
@@ -291,7 +309,9 @@ export function ElysiorUniverse({ reducedMotion = false }) {
 
   return (
     <div className="elysior-universe" aria-hidden>
-      <UniverseCanvas scrollVelocityRef={scrollVelocityRef} isMobile={isMobile} />
+      <UniverseErrorBoundary>
+        <UniverseCanvas scrollVelocityRef={scrollVelocityRef} isMobile={isMobile} />
+      </UniverseErrorBoundary>
     </div>
   )
 }
