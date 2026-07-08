@@ -622,6 +622,17 @@ function App() {
                 </article>
               ))}
             </div>
+            <nav className="servicios-ia-links" aria-label={copy.servicios.iaPagesAria}>
+              <h3 className="servicios-ia-links__title">{copy.servicios.iaPagesTitle}</h3>
+              <div className="servicios-ia-links__grid">
+                {copy.servicios.iaPages.map((page) => (
+                  <a key={page.href} href={page.href} className="glass card lift-hover servicios-ia-links__card">
+                    <span className="servicios-ia-links__label">{page.label}</span>
+                    <span className="servicios-ia-links__desc">{page.description}</span>
+                  </a>
+                ))}
+              </div>
+            </nav>
           </div>
         </section>
 

@@ -388,6 +388,65 @@ function buildCopy(lang) {
         title: c.title[lang],
         description: c.description[lang],
       })),
+      iaPagesAria: L({
+        es: 'Páginas de servicios con IA',
+        en: 'AI service pages',
+        pt: 'Páginas de serviços com IA',
+        fr: 'Pages de services IA',
+      }),
+      iaPagesTitle: L({
+        es: 'Servicios con IA',
+        en: 'AI-powered services',
+        pt: 'Serviços com IA',
+        fr: 'Services avec IA',
+      }),
+      iaPages: [
+        {
+          href: '/servicios/chatbots-ia/',
+          label: L({
+            es: 'Chatbots con IA',
+            en: 'AI Chatbots',
+            pt: 'Chatbots com IA',
+            fr: 'Chatbots IA',
+          }),
+          description: L({
+            es: 'Atención 24/7, calificación y captación de leads.',
+            en: '24/7 support, qualification, and lead capture.',
+            pt: 'Atendimento 24/7, qualificação e captação de leads.',
+            fr: 'Accueil 24/7, qualification et capture de leads.',
+          }),
+        },
+        {
+          href: '/servicios/marketing-ia/',
+          label: L({
+            es: 'Marketing con IA',
+            en: 'AI Marketing',
+            pt: 'Marketing com IA',
+            fr: 'Marketing IA',
+          }),
+          description: L({
+            es: 'Campañas y contenido para más leads calificados.',
+            en: 'Campaigns and content for more qualified leads.',
+            pt: 'Campanhas e conteúdo para mais leads qualificados.',
+            fr: 'Campagnes et contenu pour plus de leads qualifiés.',
+          }),
+        },
+        {
+          href: '/servicios/automatizacion-procesos/',
+          label: L({
+            es: 'Automatización de procesos',
+            en: 'Process automation',
+            pt: 'Automação de processos',
+            fr: 'Automatisation des processus',
+          }),
+          description: L({
+            es: 'Formularios, CRM y seguimiento conectados.',
+            en: 'Connected forms, CRM, and follow-up.',
+            pt: 'Formulários, CRM e acompanhamento ligados.',
+            fr: 'Formulaires, CRM et suivi connectés.',
+          }),
+        },
+      ],
     },
     industrias: {
       eyebrow: L({ es: 'Alcance', en: 'Reach', pt: 'Alcance', fr: 'Portée' }),
