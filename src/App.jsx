@@ -12,7 +12,7 @@ import {
   trackLeadFormSuccess,
 } from './analytics.js'
 
-const WHATSAPP_PREFILL = 'Hola, quiero más información sobre sus servicios.'
+const WHATSAPP_PREFILL = 'Hi, I would like more information about your services.'
 const WHATSAPP_URL = `https://wa.me/50660256080?text=${encodeURIComponent(WHATSAPP_PREFILL)}`
 const WHATSAPP_LINK_REL = 'noopener noreferrer'
 const CONTACT_EMAIL = 'contact@elysiorglobal.com'
@@ -147,8 +147,8 @@ function LanguageSwitcher({ lang, setLang, copy, className = '', onPick }) {
   }, [open])
 
   const options = [
-    { code: 'es', label: copy.lang.es },
     { code: 'en', label: copy.lang.en },
+    { code: 'es', label: copy.lang.es },
     { code: 'pt', label: copy.lang.pt },
     { code: 'fr', label: copy.lang.fr },
   ]
@@ -194,9 +194,9 @@ function LanguageSwitcher({ lang, setLang, copy, className = '', onPick }) {
 function App() {
   const reducedMotion = usePrefersReducedMotion()
   const [lang, setLang] = useState(() => {
-    if (typeof window === 'undefined') return 'es'
+    if (typeof window === 'undefined') return 'en'
     const s = localStorage.getItem(LANG_STORAGE_KEY)
-    return LANG_CODES.includes(s) ? s : 'es'
+    return LANG_CODES.includes(s) ? s : 'en'
   })
   const copy = getCopy(lang)
 

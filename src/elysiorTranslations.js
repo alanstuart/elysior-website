@@ -1,5 +1,5 @@
 /**
- * ELYSIOR — multilingual site copy (ES primary).
+ * ELYSIOR — multilingual site copy (EN primary).
  * Imported into App.jsx as the single translations source.
  */
 
@@ -118,7 +118,7 @@ const SERVICE_ROWS = serviceCards([
 ])
 
 function pick(lang, bundle) {
-  return bundle[lang] || bundle.es
+  return bundle[lang] || bundle.en
 }
 
 function buildCopy(lang) {
@@ -1313,12 +1313,12 @@ function buildCopy(lang) {
   }
 }
 
-export const LANG_CODES = ['es', 'en', 'pt', 'fr']
+export const LANG_CODES = ['en', 'es', 'pt', 'fr']
 
 export const LANG_STORAGE_KEY = 'elysior_lang'
 
 export function getCopy(lang) {
-  const code = LANG_CODES.includes(lang) ? lang : 'es'
+  const code = LANG_CODES.includes(lang) ? lang : 'en'
   return buildCopy(code)
 }
 
