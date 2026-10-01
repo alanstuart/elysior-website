@@ -1,12 +1,14 @@
 /**
  * Public GBP starting prices for the #precios section.
- * Edit amounts here. English and Spanish share the same tiers.
+ * Edit amounts here. Package names stay in English across all languages,
+ * so email enquiry subjects ("<name> enquiry") stay consistent too.
  */
 const packages = {
   en: {
     lead: "Transparent GBP starting points. Every project can adapt to your business's size, budget and goals.",
     badge: 'Recommended',
     cta: 'Book a free strategy call',
+    emailCta: 'Prefer to write? Email us',
     packages: [
       {
         name: 'Launch',
@@ -27,6 +29,7 @@ const packages = {
       {
         name: 'Growth System',
         price: 'From £1,990',
+        priceNote: 'one-off',
         monthly: '£199/month — hosting, updates and chatbot maintenance',
         blurb: 'A multi-page website and lead system for UK businesses ready to capture enquiries.',
         features: [
@@ -44,6 +47,7 @@ const packages = {
       {
         name: 'Elysior Elite',
         price: 'From £3,990',
+        priceNote: 'one-off',
         monthly: '£399/month — ad spend is paid separately by the client',
         blurb: 'Everything in Growth, plus an initial Google Ads campaign setup. Setup only, not ongoing management.',
         features: [
@@ -60,6 +64,7 @@ const packages = {
     lead: 'Puntos de partida transparentes en GBP. Cada proyecto puede adaptarse al tamaño, presupuesto y objetivos de tu negocio.',
     badge: 'Recomendado',
     cta: 'Reservar una llamada de estrategia gratuita',
+    emailCta: '¿Prefieres escribir? Escríbenos',
     packages: [
       {
         name: 'Launch',
@@ -80,6 +85,7 @@ const packages = {
       {
         name: 'Growth System',
         price: 'Desde £1,990',
+        priceNote: 'pago único',
         monthly: '£199/mes — hosting, actualizaciones y mantenimiento del chatbot',
         blurb: 'Un sitio de varias páginas y un sistema de captación para empresas del Reino Unido.',
         features: [
@@ -97,12 +103,125 @@ const packages = {
       {
         name: 'Elysior Elite',
         price: 'Desde £3,990',
+        priceNote: 'pago único',
         monthly: '£399/mes — la inversión publicitaria la paga el cliente',
         blurb: 'Todo lo de Growth, más la configuración inicial de una campaña de Google Ads. Solo la configuración, no la gestión continua.',
         features: [
           'Todo lo incluido en Growth System',
           'Configuración inicial de una campaña de Google Ads',
           'Solo configuración, no gestión continua',
+        ],
+        ctaKind: 'project',
+        highlighted: false,
+      },
+    ],
+  },
+  pt: {
+    lead: 'Pontos de partida transparentes em GBP. Cada projeto pode adaptar-se ao tamanho, orçamento e objetivos do seu negócio.',
+    badge: 'Recomendado',
+    cta: 'Agendar uma chamada de estratégia gratuita',
+    emailCta: 'Prefere escrever? Envie-nos um email',
+    packages: [
+      {
+        name: 'Launch',
+        price: 'A partir de £990',
+        monthly: 'pagamento único',
+        blurb: 'Uma landing page premium ou um site pequeno com várias páginas para empresas do Reino Unido que precisam de uma presença online clara.',
+        features: [
+          'Landing page premium ou site pequeno com várias páginas',
+          'Design responsivo',
+          'Formulário de contacto',
+          'Botão de WhatsApp',
+          'SEO básico',
+          'Otimização de velocidade',
+        ],
+        ctaKind: 'strategy',
+        highlighted: false,
+      },
+      {
+        name: 'Growth System',
+        price: 'A partir de £1.990',
+        priceNote: 'pagamento único',
+        monthly: '£199/mês — alojamento, atualizações e manutenção do chatbot',
+        blurb: 'Um website com várias páginas e um sistema de captação de leads para empresas do Reino Unido prontas para captar pedidos.',
+        features: [
+          'Website com várias páginas',
+          'Landing page para Google Ads',
+          'Copywriting de conversão',
+          'Formulários de captação',
+          'Configuração de analytics',
+          'Reserva em calendário (Cal.com)',
+          'Chatbot de perguntas frequentes e captação',
+        ],
+        ctaKind: 'strategy',
+        highlighted: true,
+      },
+      {
+        name: 'Elysior Elite',
+        price: 'A partir de £3.990',
+        priceNote: 'pagamento único',
+        monthly: '£399/mês — o investimento publicitário é pago separadamente pelo cliente',
+        blurb: 'Tudo o que está no Growth, mais a configuração inicial de uma campanha de Google Ads. Apenas a configuração, sem gestão contínua.',
+        features: [
+          'Tudo o que está incluído no Growth System',
+          'Configuração inicial de uma campanha de Google Ads',
+          'Apenas configuração, sem gestão contínua',
+        ],
+        ctaKind: 'project',
+        highlighted: false,
+      },
+    ],
+  },
+  fr: {
+    lead: 'Points de départ transparents en GBP. Chaque projet peut s’adapter à la taille, au budget et aux objectifs de votre entreprise.',
+    badge: 'Recommandé',
+    cta: 'Réserver un appel stratégique gratuit',
+    emailCta: 'Vous préférez écrire ? Envoyez-nous un email',
+    packages: [
+      {
+        name: 'Launch',
+        price: 'À partir de 990 £',
+        monthly: 'paiement unique',
+        blurb: 'Une landing page premium ou un petit site multipage pour les entreprises britanniques qui ont besoin d’une présence en ligne claire.',
+        features: [
+          'Landing page premium ou petit site multipage',
+          'Design responsive',
+          'Formulaire de contact',
+          'Bouton WhatsApp',
+          'SEO de base',
+          'Optimisation de la vitesse',
+        ],
+        ctaKind: 'strategy',
+        highlighted: false,
+      },
+      {
+        name: 'Growth System',
+        price: 'À partir de 1 990 £',
+        priceNote: 'paiement unique',
+        monthly: '199 £/mois — hébergement, mises à jour et maintenance du chatbot',
+        blurb: 'Un site multipage et un système de capture de leads pour les entreprises britanniques prêtes à capter des demandes.',
+        features: [
+          'Site web multipage',
+          'Landing page Google Ads',
+          'Copywriting de conversion',
+          'Formulaires de capture',
+          'Configuration analytics',
+          'Réservation en calendrier (Cal.com)',
+          'Chatbot FAQ et capture de leads',
+        ],
+        ctaKind: 'strategy',
+        highlighted: true,
+      },
+      {
+        name: 'Elysior Elite',
+        price: 'À partir de 3 990 £',
+        priceNote: 'paiement unique',
+        monthly: '399 £/mois — le budget publicitaire est payé séparément par le client',
+        blurb: 'Tout ce qui est dans Growth, plus la configuration initiale d’une campagne Google Ads. Configuration uniquement, pas de gestion continue.',
+        features: [
+          'Tout ce qui est inclus dans Growth System',
+          'Configuration initiale d’une campagne Google Ads',
+          'Configuration uniquement, pas de gestion continue',
         ],
         ctaKind: 'project',
         highlighted: false,

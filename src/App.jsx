@@ -722,7 +722,12 @@ function App() {
                     <span className="pricing-card__badge">{pricing.badge}</span>
                   ) : null}
                   <h3 className="pricing-card__name">{pkg.name}</h3>
-                  <p className="pricing-card__price">{pkg.price}</p>
+                  <p className="pricing-card__price">
+                    {pkg.price}
+                    {pkg.priceNote ? (
+                      <span className="pricing-card__price-note"> · {pkg.priceNote}</span>
+                    ) : null}
+                  </p>
                   {pkg.monthly ? <p className="pricing-card__monthly">{pkg.monthly}</p> : null}
                   <p className="pricing-card__blurb">{pkg.blurb}</p>
                   <ul className="pricing-card__list">
@@ -737,6 +742,12 @@ function App() {
                     rel={CAL_LINK_REL}
                   >
                     {pricing.cta}
+                  </a>
+                  <a
+                    className="pricing-card__email-link"
+                    href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`${pkg.name} enquiry`)}`}
+                  >
+                    {pricing.emailCta}
                   </a>
                 </article>
               ))}

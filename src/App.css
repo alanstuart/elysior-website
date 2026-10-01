@@ -2661,12 +2661,33 @@ main {
   -webkit-text-fill-color: transparent;
 }
 
+.pricing-card__price-note {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(248, 250, 255, 0.56);
+  -webkit-text-fill-color: rgba(248, 250, 255, 0.56);
+}
+
 .pricing-card__monthly {
   margin: 6px 0 0;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.02em;
   color: rgba(248, 250, 255, 0.62);
+}
+
+.pricing-card__email-link {
+  margin-top: 4px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(248, 250, 255, 0.56);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.pricing-card__email-link:hover {
+  color: var(--gold-bright);
 }
 
 .pricing-card__blurb {
