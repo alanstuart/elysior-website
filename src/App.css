@@ -2661,6 +2661,14 @@ main {
   -webkit-text-fill-color: transparent;
 }
 
+.pricing-card__monthly {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(248, 250, 255, 0.62);
+}
+
 .pricing-card__blurb {
   margin: 0;
   font-size: 15px;
@@ -3083,7 +3091,7 @@ main {
   }
 }
 
-/* Spanish / global positioning refinements */
+/* UK English positioning */
 
 .landing {
   --bg: #020208;

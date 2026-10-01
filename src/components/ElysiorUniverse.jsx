@@ -638,13 +638,9 @@ function UniverseCanvas({ scrollVelocityRef, progressVelocityRef, isMobile }) {
   )
 }
 
-export function ElysiorUniverse({ reducedMotion = false }) {
+/** Desktop-only WebGL scene — not mounted on mobile / reduced-motion. */
+function ElysiorUniverseDesktop() {
   const { velocityRef, progressVelocityRef } = useScrollVelocityRef()
-  const isMobile = useIsMobileViewport()
-
-  if (reducedMotion) {
-    return <div className="elysior-universe elysior-universe--static" aria-hidden />
-  }
 
   return (
     <div className="elysior-universe" aria-hidden>
@@ -652,9 +648,23 @@ export function ElysiorUniverse({ reducedMotion = false }) {
         <UniverseCanvas
           scrollVelocityRef={velocityRef}
           progressVelocityRef={progressVelocityRef}
-          isMobile={isMobile}
+          isMobile={false}
         />
       </UniverseErrorBoundary>
     </div>
   )
+}
+
+/**
+ * Full-page backdrop: CSS static on mobile (≤768px) and reduced-motion;
+ * Three.js canvas on desktop only.
+ */
+export function ElysiorUniverse({ reducedMotion = false }) {
+  const isMobile = useIsMobileViewport()
+
+  if (reducedMotion || isMobile) {
+    return <div className="elysior-universe elysior-universe--static" aria-hidden />
+  }
+
+  return <ElysiorUniverseDesktop />
 }

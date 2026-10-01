@@ -5,6 +5,7 @@ import './App.css'
  * (same project, imported here per maintainability).
  */
 import { getCopy, LANG_CODES, LANG_STORAGE_KEY } from './elysiorTranslations.js'
+import { getPricing } from './pricing.js'
 import { ElysiorUniverse } from './components/ElysiorUniverse.jsx'
 import {
   attachCtaClickTracking,
@@ -26,7 +27,7 @@ function calHref(kind) {
 
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqengele'
 const LOGO_SRC = '/logo-elysior.png'
-const LOGO_ALT = 'ELYSIOR Global'
+const LOGO_ALT = 'ELYSIOR'
 const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61586996964376'
 const INSTAGRAM_URL = 'https://www.instagram.com/elysiorglobal/'
 const EXTERNAL_LINK_REL = 'noopener noreferrer'
@@ -199,6 +200,7 @@ function App() {
     return LANG_CODES.includes(s) ? s : 'en'
   })
   const copy = getCopy(lang)
+  const pricing = getPricing(lang)
 
   const [navOpen, setNavOpen] = useState(false)
   const navOpenRef = useRef(false)
@@ -232,7 +234,7 @@ function App() {
     setLang(code)
     setCarousel(0)
     setFaqOpen(null)
-  }, [])
+  }, [setCarousel])
 
   useEffect(() => {
     localStorage.setItem(LANG_STORAGE_KEY, lang)
@@ -622,17 +624,6 @@ function App() {
                 </article>
               ))}
             </div>
-            <nav className="servicios-ia-links" aria-label={copy.servicios.iaPagesAria}>
-              <h3 className="servicios-ia-links__title">{copy.servicios.iaPagesTitle}</h3>
-              <div className="servicios-ia-links__grid">
-                {copy.servicios.iaPages.map((page) => (
-                  <a key={page.href} href={page.href} className="glass card lift-hover servicios-ia-links__card">
-                    <span className="servicios-ia-links__label">{page.label}</span>
-                    <span className="servicios-ia-links__desc">{page.description}</span>
-                  </a>
-                ))}
-              </div>
-            </nav>
           </div>
         </section>
 
@@ -643,13 +634,6 @@ function App() {
               <h2 className="section__title">{copy.industrias.title}</h2>
               <p className="section__lead section__lead--center">{copy.industrias.lead}</p>
             </header>
-            <div className="built-for">
-              {copy.industrias.items.map((label) => (
-                <div key={`${lang}-${label}`} className="built-for__pill glass lift-hover">
-                  {label}
-                </div>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -726,19 +710,20 @@ function App() {
             <header className="section__head section__head--center">
               <p className="eyebrow eyebrow--center">{copy.precios.eyebrow}</p>
               <h2 className="section__title">{copy.precios.title}</h2>
-              <p className="section__lead section__lead--center">{copy.precios.lead}</p>
+              <p className="section__lead section__lead--center">{pricing.lead}</p>
             </header>
             <div className="cards cards--3 cards--pricing">
-              {copy.precios.packages.map((pkg) => (
+              {pricing.packages.map((pkg) => (
                 <article
                   key={pkg.name}
                   className={`glass pricing-card lift-hover${pkg.highlighted ? ' pricing-card--featured' : ''}`}
                 >
                   {pkg.highlighted ? (
-                    <span className="pricing-card__badge">{copy.precios.badge}</span>
+                    <span className="pricing-card__badge">{pricing.badge}</span>
                   ) : null}
                   <h3 className="pricing-card__name">{pkg.name}</h3>
                   <p className="pricing-card__price">{pkg.price}</p>
+                  {pkg.monthly ? <p className="pricing-card__monthly">{pkg.monthly}</p> : null}
                   <p className="pricing-card__blurb">{pkg.blurb}</p>
                   <ul className="pricing-card__list">
                     {pkg.features.map((f) => (
@@ -751,7 +736,7 @@ function App() {
                     target="_blank"
                     rel={CAL_LINK_REL}
                   >
-                    {pkg.ctaLabel}
+                    {pricing.cta}
                   </a>
                 </article>
               ))}
